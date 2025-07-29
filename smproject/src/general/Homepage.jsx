@@ -98,7 +98,7 @@ function Homepage() {
         </Box>
 
         {/* ===== register strip ===== */}
-        <FlexBetween
+        {/* <FlexBetween
           sx={{
             flexWrap: downSm ? "wrap" : "nowrap",
             gap: 2,
@@ -110,11 +110,11 @@ function Homepage() {
             ml: sideMargin,
             mr: sideMargin,
           }}
-        >
-          <Typography
+        > */}
+          {/* <Typography
             fontWeight="bold"
             fontFamily="nevis, sans-serif"
-            fontSize="2rem"                 /* keep original */
+            fontSize="2rem"                
             sx={{
               color: "white",
               fontSize: downSm ? "1.3rem" : "2rem",
@@ -123,9 +123,9 @@ function Homepage() {
             }}
           >
             Click here to register for Events
-          </Typography>
+          </Typography> */}
 
-          <Button
+          {/* <Button
             onClick={() => navigate("/signIn")}
             sx={{
               bgcolor: "#F37D00",
@@ -137,7 +137,7 @@ function Homepage() {
           >
             Register
           </Button>
-        </FlexBetween>
+        </FlexBetween> */}
 
         {/* ===== about ===== */}
         <Box mt={4}>
