@@ -55,7 +55,7 @@ function Homepage() {
               fontSize: downSm ? "2.5rem" : downMd ? "3rem" : "4rem",
             }}
           >
-            V&nbsp;I&nbsp;N&nbsp;T&nbsp;E&nbsp;R&nbsp;B&nbsp;A&nbsp;S&nbsp;H&nbsp;’25
+            V&nbsp;I&nbsp;N&nbsp;T&nbsp;E&nbsp;R&nbsp;B&nbsp;A&nbsp;S&nbsp;H&nbsp;’26
           </Typography>
 
           <Typography
