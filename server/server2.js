@@ -299,7 +299,6 @@ router.post("/organiserValidate", async (req, res) => {
     const responseData = {
       organiserId: organiserId,
       organiserName: organiserNameRes.rows[0].organizer_name,
-      role: "admin",
       assignedEvents: {
         eventId: eventData.eventId,
         eventName: eventData.eventName,
