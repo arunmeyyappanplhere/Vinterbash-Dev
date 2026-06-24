@@ -100,6 +100,32 @@ app.use(express.json());
  * @property {string} teacher2Phone
  */
 
+/**
+ * @typedef {Object} ValidateResponse
+ * @property {string} schoolName
+ * @property {string} school_id
+ * @property {Array} events
+ * @property {Array} eventsReg
+ */
+
+/**
+ * @typedef {Object} OrganiserValidateRequest
+ * @property {string} organiserName
+ * @property {string} password
+ */
+/**
+ * @typedef {Object} organiserValidateResponse
+ *  @property {string} organiserName
+ *  @property {string} organiserId
+ *  @property {string} role
+ *  @property {Array} assignedEvents
+ *  @property {string} eventId
+ *  @property {string} eventName
+ *  @property {Array} participants
+ *  @property {string} schoolName
+ *  @property {string} teamName
+ *  @property {Arrary} members*/
+
 // ============================================================================
 // Filtering Functions
 // ============================================================================
@@ -120,7 +146,9 @@ const filterRegisteredEventBySchool = (setOfRegistrations) => {
 // ============================================================================
 const Queries = {
   VALIDATE_SCHOOL: `SELECT school_id FROM schools WHERE school_name = $1 AND password = $2`,
+  VALIDATE_ORGANISER: `SELECT org_id FROM users WHERE org_id = $1 AND password = $2`,
   GET_ALL_EVENTS: `SELECT event_name AS "eventName", event_id AS "eventId" FROM events`,
+  GET_ORGANISER_NAME: `SELECT organizer_name FROM organizers WHERE organizer_id = $1`,
   GET_SCHOOL_EVENT_REGISTRATION_STATUS: `
         SELECT s.school_id, s.school_name, e.event_id, e.max_teams_per_school, COUNT(t.team_id) AS registered_teams
         FROM schools s CROSS JOIN events e LEFT JOIN teams t ON t.school_id = s.school_id AND t.event_id = e.event_id
@@ -153,6 +181,18 @@ const Queries = {
     `,
   REGISTER_TEACHERS: `UPDATE schools SET teacher1name = $1, teacher2name = $2, teacher1number = $3, teacher2number = $4 WHERE school_id = $5`,
   GET_TEACHER_INFO: `SELECT teacher1name, teacher1number, teacher2name, teacher2number FROM schools WHERE school_id = $1`,
+  GET_ASSIGNED_EVENTS_BY_ORG: `SELECT 
+    e.event_id AS "eventId",
+    e.event_name AS "eventName",
+    s.school_name AS "schoolName",
+    t.team_name AS "teamName",
+    p.participant_name AS "memberName"
+FROM organizers o
+JOIN events e ON o.event_id = e.event_id
+LEFT JOIN teams t ON e.event_id = t.event_id
+LEFT JOIN schools s ON t.school_id = s.school_id
+LEFT JOIN participants p ON t.team_id = p.team_id
+WHERE o.organizer_id = $1;`,
 };
 
 // ============================================================================
@@ -200,6 +240,78 @@ function buildEventWithTeams(rows, eventName) {
 // 5. API Routes (Controllers + Services Integrated)
 // ============================================================================
 const router = express.Router();
+
+router.post("/organiserValidate", async (req, res) => {
+  try {
+    /** @type {OrganiserValidateRequest} */
+    const { organiserId, password } = req.body;
+    console.log("requests:", req.body);
+
+    const organiserRes = await pool.query(Queries.VALIDATE_ORGANISER, [
+      organiserId,
+      password,
+    ]);
+    const organiserNameRes = await pool.query(Queries.GET_ORGANISER_NAME, [
+      organiserId,
+    ]);
+
+    const assignedEventsRes = await pool.query(
+      Queries.GET_ASSIGNED_EVENTS_BY_ORG,
+      [organiserId],
+    );
+    const rows = assignedEventsRes.rows;
+
+    const eventData = {
+      eventId: rows[0].eventId,
+      eventName: rows[0].eventName,
+      participants: [],
+    };
+
+    const teamMap = {};
+
+    rows.forEach((row) => {
+      const key = `${row.schoolName}_${row.teamName}`;
+
+      if (!teamMap[key]) {
+        teamMap[key] = {
+          schoolName: row.schoolName,
+          teamName: row.teamName,
+          members: [],
+        };
+      }
+
+      teamMap[key].members.push(row.memberName);
+    });
+
+    eventData.participants = Object.values(teamMap);
+
+    console.log(eventData);
+    if (organiserRes.rows.length === 0)
+      return res.status(401).json({ error: "Invalid" });
+
+    // const eventsRes = await pool.query(Queries.GET_ALL_EVENTS);
+    // const RegisteredEventsRes = await pool.query(
+    //   Queries.GET_SCHOOL_REGISTERED_EVENTS,
+    //   [schoolRes.rows[0].school_id],
+    // );
+
+    /** @type {organiserValidateResponse} */
+    const responseData = {
+      organiserId: organiserId,
+      organiserName: organiserNameRes.rows[0].organizer_name,
+      role: "admin",
+      assignedEvents: {
+        eventId: eventData.eventId,
+        eventName: eventData.eventName,
+        particpants: eventData.participants,
+      },
+    };
+    return res.status(200).json(responseData);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 router.post("/validate", async (req, res) => {
   try {
