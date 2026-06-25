@@ -126,6 +126,17 @@ app.use(express.json());
  *  @property {string} teamName
  *  @property {Arrary} members*/
 
+/**
+ * @typedef {Object} enterResultsRequest
+ *  @property {string} event_id
+ *  @property {string} team_id
+ *  @property {number} position
+ *  */
+
+/**
+ * @typedef {Object} enterResultsResponse
+ *  @property {string} message*/
+
 // ============================================================================
 // Filtering Functions
 // ============================================================================
@@ -159,6 +170,7 @@ const Queries = {
   INSERT_SCHOOL: `INSERT INTO schools (school_id, school_name) VALUES ($1, (SELECT school_name FROM schools WHERE school_id = $1)) ON CONFLICT (school_id) DO NOTHING`,
   INSERT_TEAM: `INSERT INTO teams (team_id, event_id, school_id, team_name) VALUES ($1, $2, $3, $4)`,
   INSERT_PARTICIPANT: `INSERT INTO participants (participant_id, team_id, participant_name) VALUES ($1, $2, $3)`,
+  INSERT_RESULT: `INSERT INTO team_results (result_id, event_id, team_id, position, points) VALUES ($1, $2, $3, $4, $5)`,
   GET_PARTICIPANTS_AND_EVENTS_BY_SCHOOL: `
         SELECT p.participant_name AS "participantName", e.event_name AS "eventName"
         FROM participants p JOIN teams t ON p.team_id = t.team_id JOIN events e ON t.event_id = e.event_id
@@ -240,6 +252,31 @@ function buildEventWithTeams(rows, eventName) {
 // 5. API Routes (Controllers + Services Integrated)
 // ============================================================================
 const router = express.Router();
+
+router.post("/enterResults", async (req, res) => {
+  try {
+    /** @type {enterResultsRequest} */
+    const { event_id, team_id, position } = req.body;
+    console.log(event_id, team_id, position);
+    /** @type {enterResultsResponse} */
+
+    const result_id = `${event_id}${team_id}`;
+    const points = position * 2;  // Needs new DB
+    await pool.query(Queries.INSERT_RESULT, [
+      result_id,
+      event_id,
+      team_id,
+      position,
+      points
+    ]);
+
+    console.log("Results entered successfully.");
+    res.status(200).json({ message: "Results entered successfully." });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 router.post("/organiserValidate", async (req, res) => {
   try {
