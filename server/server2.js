@@ -157,7 +157,7 @@ const filterRegisteredEventBySchool = (setOfRegistrations) => {
 // ============================================================================
 const Queries = {
   VALIDATE_SCHOOL: `SELECT school_id FROM schools WHERE school_name = $1 AND password = $2`,
-  VALIDATE_ORGANISER: `SELECT org_id FROM users WHERE org_id = $1 AND password = $2`,
+  VALIDATE_ORGANISER: `SELECT organizer_id FROM organizers WHERE organizer_name = $1 AND password = $2`,
   GET_ALL_EVENTS: `SELECT event_name AS "eventName", event_id AS "eventId" FROM events`,
   GET_ORGANISER_NAME: `SELECT organizer_name FROM organizers WHERE organizer_id = $1`,
   GET_SCHOOL_EVENT_REGISTRATION_STATUS: `
@@ -198,6 +198,7 @@ const Queries = {
     e.event_name AS "eventName",
     s.school_name AS "schoolName",
     t.team_name AS "teamName",
+    t.team_id AS "teamId",
     p.participant_name AS "memberName"
 FROM organizers o
 JOIN events e ON o.event_id = e.event_id
@@ -256,18 +257,17 @@ const router = express.Router();
 router.post("/enterResults", async (req, res) => {
   try {
     /** @type {enterResultsRequest} */
-    const { event_id, team_id, position } = req.body;
+    const { event_id, team_id, position, points } = req.body;
     console.log(event_id, team_id, position);
     /** @type {enterResultsResponse} */
 
     const result_id = `${event_id}${team_id}`;
-    const points = position * 2;  // Needs new DB
     await pool.query(Queries.INSERT_RESULT, [
       result_id,
       event_id,
       team_id,
       position,
-      points
+      points,
     ]);
 
     console.log("Results entered successfully.");
@@ -281,20 +281,20 @@ router.post("/enterResults", async (req, res) => {
 router.post("/organiserValidate", async (req, res) => {
   try {
     /** @type {OrganiserValidateRequest} */
-    const { organiserId, password } = req.body;
+    const { organiserName, password } = req.body;
     console.log("requests:", req.body);
 
     const organiserRes = await pool.query(Queries.VALIDATE_ORGANISER, [
-      organiserId,
+      organiserName,
       password,
     ]);
     const organiserNameRes = await pool.query(Queries.GET_ORGANISER_NAME, [
-      organiserId,
+      organiserName,
     ]);
 
     const assignedEventsRes = await pool.query(
       Queries.GET_ASSIGNED_EVENTS_BY_ORG,
-      [organiserId],
+      [organiserRes.rows[0].organizer_id],
     );
     const rows = assignedEventsRes.rows;
 
@@ -312,6 +312,7 @@ router.post("/organiserValidate", async (req, res) => {
       if (!teamMap[key]) {
         teamMap[key] = {
           schoolName: row.schoolName,
+          teamId: row.teamId,
           teamName: row.teamName,
           members: [],
         };
@@ -334,8 +335,8 @@ router.post("/organiserValidate", async (req, res) => {
 
     /** @type {organiserValidateResponse} */
     const responseData = {
-      organiserId: organiserId,
-      organiserName: organiserNameRes.rows[0].organizer_name,
+      organiserId: organiserRes.rows[0].organizer_id,
+      organiserName: organiserName,
       assignedEvents: {
         eventId: eventData.eventId,
         eventName: eventData.eventName,
