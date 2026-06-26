@@ -8,7 +8,10 @@ staffName1:"",
 staffName2:"",
 staffNumber1:"",
 staffNumber2:"",
-refresh:false
+refresh:false,
+organiserName:"",
+organiserId:"",
+role:""
 }
 
 function reducer(state,action) {
@@ -20,7 +23,6 @@ function reducer(state,action) {
                 schoolId:action.schoolId,
                 events:action.events
             }
-            break;
         case 'logout':
             return{
                 ...state,
@@ -33,16 +35,24 @@ function reducer(state,action) {
                 staffName2:"",
                 staffNumber1:"",
                 staffNumber2:"",
-                refresh:false
+                refresh:false,
+                organiserName:"",
+                organiserId:"",
+                role:""
             }
-            break;
+        case 'organiserLogin':
+            return{
+                ...state,
+                organiserName:action.organiserName,
+                organiserId:action.organiserId,
+                role:action.role
+            }
         case 'SidebarEvent':
             return{
                 ...state,
                 activeEvent:action.activeEvent,
                 activeEventId:action.activeEventId
             }
-        
         case 'staff':
             return{
                 ...state,
@@ -51,7 +61,6 @@ function reducer(state,action) {
                 staffNumber1:action.payload.staff1Number,
                 staffNumber2:action.payload.staff2Number
             }
-    
         default:
             return state;
     }

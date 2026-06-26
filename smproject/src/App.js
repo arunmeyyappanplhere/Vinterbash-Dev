@@ -1,3 +1,5 @@
+import OrganiserDashboard from './components/OrganiserDashboard';
+import EnterResult from './components/EnterResult';
 import './App.css';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -36,6 +38,12 @@ function App() {
     <Routes>
     <Route path='/' element={<Navigate to='/homepage' replace/>}/>
     <Route path='/signIn' element={<SignIn/>} />
+    <Route path='/signIn' element={<SignIn/>} />
+    <Route path='/organiserDashboard' element={<OrganiserDashboard/>}/>
+    <Route path='/enterResult' element={<EnterResult/>}/>
+
+
+
     <Route element={<Navbar/>}>
       <Route path='/homepage' element={<Homepage/>}/>
       <Route path='/events' element={<Events/>}/>

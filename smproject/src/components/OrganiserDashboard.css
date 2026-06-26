@@ -1,0 +1,61 @@
+.organiser_dashboard {
+    padding: 30px;
+    background-color: white;
+    min-height: 100vh;
+}
+
+.organiser_dashboard h1 {
+    color: #f9bc25;
+    margin-bottom: 10px;
+}
+
+.organiser_dashboard h2 {
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+.organiser_options {
+    margin-bottom: 30px;
+}
+
+.organiser_btn {
+    background-color: #f9bc25;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    color: white;
+    font-weight: 650;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.organiser_btn:hover {
+    background-color: #ec7f40;
+}
+
+.organiser_teams {
+    margin-top: 20px;
+}
+
+.organiser_team_card {
+    border: 2px solid #f9bc25;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 15px;
+    width: 300px;
+}
+
+.organiser_team_card h4 {
+    color: #f9bc25;
+    margin-bottom: 10px;
+}
+
+.organiser_team_card ul {
+    list-style: none;
+    padding: 0;
+}
+
+.organiser_team_card ul li {
+    padding: 3px 0;
+    font-size: 14px;
+}
