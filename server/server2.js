@@ -257,10 +257,11 @@ const router = express.Router();
 router.post("/enterResults", async (req, res) => {
   try {
     /** @type {enterResultsRequest} */
-    const { event_id, team_id, position, points } = req.body;
+    const { event_id, team_id, position } = req.body;
     console.log(event_id, team_id, position);
     /** @type {enterResultsResponse} */
-
+    const points = position == 1 ? 10 : position == 2 ? 5 : 3;
+    console.log(points);
     const result_id = `${event_id}${team_id}`;
     await pool.query(Queries.INSERT_RESULT, [
       result_id,
