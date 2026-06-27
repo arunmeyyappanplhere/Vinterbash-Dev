@@ -137,6 +137,13 @@ app.use(express.json());
  * @typedef {Object} enterResultsResponse
  *  @property {string} message*/
 
+/**
+ * @typedef {Object} cummulativeScoresResponse
+ *  @property {Array} scores
+ *  @property {String} schoolName
+ *  @property {number} cummulativeScore
+ * */
+
 // ============================================================================
 // Filtering Functions
 // ============================================================================
@@ -206,6 +213,18 @@ LEFT JOIN teams t ON e.event_id = t.event_id
 LEFT JOIN schools s ON t.school_id = s.school_id
 LEFT JOIN participants p ON t.team_id = p.team_id
 WHERE o.organizer_id = $1;`,
+  GET_FINAL_RESULTS: `
+SELECT
+    s.school_name AS schoolName,
+    SUM(r.points) AS cumulativeScore
+FROM team_results r
+LEFT JOIN teams t
+    ON r.team_id = t.team_id
+LEFT JOIN schools s
+    ON t.school_id = s.school_id
+GROUP BY s.school_name
+ORDER BY cumulativeScore DESC;
+`,
 };
 
 // ============================================================================
@@ -253,6 +272,18 @@ function buildEventWithTeams(rows, eventName) {
 // 5. API Routes (Controllers + Services Integrated)
 // ============================================================================
 const router = express.Router();
+
+router.get("/cummulativeScores", async (req, res) => {
+  try {
+    /** @type {cummulativeScoresResponse} */
+    const scoresRes = await pool.query(Queries.GET_FINAL_RESULTS);
+    console.log(scoresRes.rows);
+    res.status(200).json({ scores: scoresRes.rows });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 router.post("/enterResults", async (req, res) => {
   try {
