@@ -69,6 +69,7 @@ function organiserSignin(e) {
         organiserId: response.data.organiserId,
         role: response.data.role,
         assignedEvent: response.data.assignedEvents, // ADD THIS
+        savedResults: response.data.assignedEvents.savedResults,
       });
       navigate("/OrganiserDashboard");
     })

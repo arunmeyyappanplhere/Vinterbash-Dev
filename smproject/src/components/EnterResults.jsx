@@ -6,13 +6,14 @@ import {
   InputLabel, MenuItem, Paper, Select, Typography,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ResultsTable from './ResultsTable';
 import './EnterResults.css';
 
 const POSITION_POINTS = { 1: 10, 2: 7, 3: 5 };
 
 export default function EnterResults() {
-  const [{ assignedEvent }] = useStateValue();
-
+  const [{ assignedEvent, organiserId, savedResults }] = useStateValue();
+  const [results, setResults] = useState(savedResults || []);
   const eventId   = assignedEvent?.eventId   || '';
   const eventName = assignedEvent?.eventName || '';
   const allTeams  = assignedEvent?.particpants || [];
@@ -39,6 +40,11 @@ export default function EnterResults() {
     setSelectedSchool(e.target.value);
     setSelectedTeamId('');
   };
+  // const fetchResults = () =>{
+  //   axios.get(`/vinterbash/resultsByEvent/${organiserId}`)
+  //   .then((res) => setResults(res.data?.assignedEvents?.savedResults || []))
+  //   .catch((err) => console.error(err));
+  // };
 
   const addRow = () => {
     if (!selectedSchool || !selectedTeamId) {
@@ -91,7 +97,18 @@ export default function EnterResults() {
         )
       );
       setMessage('Results saved successfully');
+      setResults((prev) => [
+        ...prev,
+        ...rows.map((r) => ({
+          resultId:   `${r.eventId}${r.teamId}`,
+          position:   r.position,
+          schoolName: r.schoolName,
+          eventName:  r.eventName,
+          members:    r.members,
+        })),
+      ]);
       setRows([]);
+      
     } catch (err) {
       console.error(err);
       setMessage(err?.response?.data?.error || 'Save failed');
@@ -322,6 +339,7 @@ export default function EnterResults() {
           </Paper>
         </Grid>
       </Grid>
+      <ResultsTable results={results} eventName={eventName} />
     </Box>
   );
 }

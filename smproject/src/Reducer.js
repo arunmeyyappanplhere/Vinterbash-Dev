@@ -1,6 +1,7 @@
 export const initialState = {
   schoolName: "",
   events: [],
+  savedResults: [],
   schoolId: "",
   activeEvent: "",
   activeEventId: "",
@@ -33,6 +34,7 @@ function reducer(state, action) {
         organiserId: action.organiserId,
         role: action.role,
         assignedEvent: action.assignedEvent, // ADD THIS
+        savedResults: action.savedResults, 
       };
     case 'SidebarEvent':
       return {
