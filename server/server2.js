@@ -225,7 +225,7 @@ GROUP BY s.school_name
 ORDER BY cumulativeScore DESC;
 `,
 // pushed by Arvindh Lakshman starts
-GET_SAVED_RESULTS:`SELECT p.participant_name, r.team_id, r.result_id, r.position, e.event_name, s.school_name
+GET_SAVED_RESULTS:`SELECT p.participant_name, r.team_id, r.result_id, r.position,r.points, e.event_name, s.school_name
   FROM team_results r
   JOIN participants p ON p.team_id = r.team_id
   JOIN teams t ON t.team_id = r.team_id
@@ -386,6 +386,7 @@ router.post("/organiserValidate", async (req, res) => {
         groupedMap[key] = {
           resultId: savedResult.result_id,
           position: savedResult.position,
+          points:savedResult.points,
           schoolName: savedResult.school_name,
           eventName: savedResult.event_name,
           members: []
