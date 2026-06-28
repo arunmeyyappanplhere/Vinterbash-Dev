@@ -213,8 +213,7 @@ LEFT JOIN teams t ON e.event_id = t.event_id
 LEFT JOIN schools s ON t.school_id = s.school_id
 LEFT JOIN participants p ON t.team_id = p.team_id
 WHERE o.organizer_id = $1;`,
-  GET_FINAL_RESULTS: `
-SELECT
+  GET_FINAL_RESULTS: `SELECT
     s.school_name AS schoolName,
     SUM(r.points) AS cumulativeScore
 FROM team_results r
@@ -225,8 +224,17 @@ LEFT JOIN schools s
 GROUP BY s.school_name
 ORDER BY cumulativeScore DESC;
 `,
+// pushed by Arvindh Lakshman starts
+GET_SAVED_RESULTS:`SELECT p.participant_name, r.team_id, r.result_id, r.position, e.event_name, s.school_name
+  FROM team_results r
+  JOIN participants p ON p.team_id = r.team_id
+  JOIN teams t ON t.team_id = r.team_id
+  JOIN events e ON e.event_id = t.event_id
+  JOIN schools s ON s.school_id = t.school_id
+  WHERE e.event_id = $1
+  ORDER BY r.position;`
 };
-
+// pushed by Arvindh Lakshman ends
 // ============================================================================
 // 4. Helper Methods (Replaces Spring Data Logic)
 // ============================================================================
@@ -365,6 +373,29 @@ router.post("/organiserValidate", async (req, res) => {
     //   [schoolRes.rows[0].school_id],
     // );
 
+    //Code starts here
+    // pushed by Arvindh Lakshman
+    const {rows: savedRes} = await pool.query(Queries.GET_SAVED_RESULTS, [eventData.eventId]);
+
+    const groupedMap = {};
+
+    savedRes.forEach(savedResult => {
+    const key = savedResult.team_id;
+
+      if (!groupedMap[key]) {
+        groupedMap[key] = {
+          resultId: savedResult.result_id,
+          position: savedResult.position,
+          schoolName: savedResult.school_name,
+          eventName: savedResult.event_name,
+          members: []
+        };
+      }
+
+      groupedMap[key].members.push(savedResult.participant_name);
+    });
+    //Code Ends Here
+
     /** @type {organiserValidateResponse} */
     const responseData = {
       organiserId: organiserRes.rows[0].organizer_id,
@@ -373,8 +404,12 @@ router.post("/organiserValidate", async (req, res) => {
         eventId: eventData.eventId,
         eventName: eventData.eventName,
         particpants: eventData.participants,
+        // pushed by Arvindh Lakshman
+        savedResults: Object.values(groupedMap),
       },
     };
+    console.log('SavedResult:',JSON.stringify(responseData));
+    
     return res.status(200).json(responseData);
   } catch (error) {
     console.log(error);
