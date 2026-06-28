@@ -28,6 +28,8 @@ import Homepage from './general/Homepage';
 import Events from './general/Events';
 import Contact from './general/Contact';
 import Navbar from './general/Navbar';
+import OrganiserDashboard from './components/organiserDashboard';
+import EnterResults from './components/EnterResults';
 
 function App() {
   return (
@@ -43,6 +45,8 @@ function App() {
       </Route>
     <Route element={<Layout/>}>
       <Route path='/dashboard' element={<Dashboard/>} />
+      <Route path='/organiserDashboard' element={<OrganiserDashboard/>} />
+      <Route path='/enterResults' element={<EnterResults/>} />
       <Route path='/teacherInfo' element={<StaffContact/>}/>
       <Route path='/classicaldance' element={<ClassicalDance/>}/>
       <Route path='/triquizzard' element={<Triquizzard/>}/>
