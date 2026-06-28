@@ -49,6 +49,10 @@ export default function EnterResults() {
       setMessage('This team is already in the list');
       return;
     }
+    if(rows.find((r) => r.position === position)) {
+      setMessage(`${position === 1 ? '1st' : position === 2 ? '2nd' : '3rd'} place is already assigned`);
+      return;
+    }
     setRows((prev) => [
       ...prev,
       {

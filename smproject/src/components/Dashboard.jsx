@@ -11,13 +11,14 @@ import logo from '../assets/Vinterbash_2025_first_page.png';
 import StaffContact from './StaffContact';
 
 function Dashboard() {
-  const [{ schoolId, schoolName }, dispatch] = useStateValue();
+  const [{ schoolId, schoolName, organiserName }, dispatch] = useStateValue();
   const [totalEvents, setTotalEvents] = useState(17);
   const [ToRegEvents, setToRegEvents] = useState();
   const [partiallyReg, setPartiallyRegistered] = useState();
   const [fullReg, setFullyReg] = useState();
 
   useEffect(() => {
+    if (!schoolId) return;
     axios.post('/vinterbash/registeredEvents', { schoolId })
       .then((response) => {
         console.log('InsideDashboard--->', response.data);
@@ -111,6 +112,8 @@ function Dashboard() {
       </Box>
     )}
   </AnimatedPage>
+) : organiserName ? (
+  <Navigate to="/organiserDashboard" replace />
 ) : (
   <Navigate to="/signIn" replace />
 )

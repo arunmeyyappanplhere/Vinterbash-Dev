@@ -29,7 +29,7 @@ const navItems = [
 
 const Sidebar = ({ drawerWidth, isSidebarOpen, setSidebarOpen }) => {
   const { pathname } = useLocation();
-  const[{schoolName,schoolId}]=useStateValue();
+  const[{schoolName,schoolId, organiserName}]=useStateValue();
   const [active, setactive] = useState("");
   const [eventsOpen, setEventsOpen] = useState(false);
   const navigate = useNavigate();
@@ -47,7 +47,10 @@ const Sidebar = ({ drawerWidth, isSidebarOpen, setSidebarOpen }) => {
   const renderNavItem = (text,Id) => {    
 
     let lcText=''
-    
+
+   if(text==='Dashboard'){
+    lcText=(organiserName && !schoolName) ? 'organiserDashboard' : 'dashboard';
+   }  
    if (text === 'Chordially Yours!') {
   lcText = 'groupmusic';
 } else if (text === "Enter Results"){
