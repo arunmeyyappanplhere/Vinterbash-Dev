@@ -28,6 +28,7 @@ function Navbar() {
 
   /* nav links */
   const links = [
+    { label: "Leaderboard", to: "/leaderboard" },
     { label: "Events & Venues", to: "/events" },
     {
       label: "2025 Rule Book",
