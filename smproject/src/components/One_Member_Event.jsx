@@ -4,10 +4,13 @@ import './One_Member_Event.css'
 import { useStateValue } from '../StateProvider';
 import AnimatedPage from '../templates/AnimatedPage';
 import { useEffect } from 'react';
+import RegisteredTeam from './RegisteredTeam';
 
-function One_Member_Event({ eventId, eventName, registeredTeams, schoolId, teamIndex }) {
+function One_Member_Event({ eventId, eventName, registeredTeams, schoolId, teamIndex, onTeamUpdate }) {
   const [p1, setP1] = useState('');
   const[{schoolName},dispatch]=useStateValue();
+
+  // eventId,eventName, team, schoolId, teamIndex, maxMember
 
   const handleEvent = async (e) => {
     e.preventDefault();
@@ -19,12 +22,16 @@ function One_Member_Event({ eventId, eventName, registeredTeams, schoolId, teamI
         };
       const participants=Object.values(participantObj);
         try {
-          await axios.post('/vinterbash/register', {participants,eventId,schoolId,schoolName,teamId})
-        .then(() => {
+          await axios.post('/vinterbash/register', {participants,eventId,schoolId,schoolName,teamId});
+          console.log(JSON.stringify(p1));
+
           setP1('');
+
           alert('Added Successfully');
-        })
-        .catch((error) => alert(error.response?.data || 'Error adding team'));
+
+          if (onTeamUpdate) {
+            onTeamUpdate();
+          }
           
         } catch (error) {
            alert(error.response?.data || 'Error updating participants');

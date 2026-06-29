@@ -56,7 +56,7 @@ function App() {
       <Route path='/fifa' element={<FIFA/>}/>
       <Route path='/groupmusic' element={<Groupmusic/>}/>
       <Route path='/improv' element={<Improv/>}/>
-      <Route path='/cube' element={<Cubing/>}/>
+      <Route path='/cubing' element={<Cubing/>}/>
       <Route path='/poster' element={<DigitalPosterDesign/>}/>
       <Route path='/tamillits' element={<TamilLits/>}/>
       <Route path='/title' element={<TitleEvent/>}/>

@@ -33,7 +33,7 @@ const Sidebar = ({ drawerWidth, isSidebarOpen, setSidebarOpen }) => {
   const [active, setactive] = useState("");
   const [eventsOpen, setEventsOpen] = useState(false);
   const navigate = useNavigate();
-  const[{events,activeEvent,activeEventId},dispatch]=useStateValue();
+  const[{events,activeEvent,activeEventId,organiserId},dispatch]=useStateValue();
   const eventItems = events;
 
   useEffect(() => {
@@ -169,22 +169,26 @@ const Sidebar = ({ drawerWidth, isSidebarOpen, setSidebarOpen }) => {
             <List>
               {navItems
   .filter(({ text }) => {
-    if (schoolId === '999') {
+    if (schoolId === '999' ) {
       // Hide Participants and Teacher's Info for admin
       return text !== 'Participants' && text !== "Teacher's Info";
+    }
+    else if(organiserId){
+       return text !== "Teacher's Info";
     }
     return true; // Keep all items for others
   })
   .map(({ text }) => renderNavItem(text))}
 
               {/* Events main item */}
+              {!organiserId &&
               <ListItem disablePadding>
                 <ListItemButton onClick={handleEventsToggle}>
                   <ListItemText primary="Events" sx={{ ml: "1rem" }} />
                   {eventsOpen ? <ExpandLess /> : <ExpandMore />}
                 </ListItemButton>
               </ListItem>
-
+}
               {/* Events sub-items */}
               <Collapse in={eventsOpen} timeout="auto" unmountOnExit>
                 <List component="div" disablePadding>

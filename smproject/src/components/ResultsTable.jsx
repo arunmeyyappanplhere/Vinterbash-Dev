@@ -28,8 +28,12 @@ const positionLabel = (pos) => {
 };
 
 export default function ResultsTable({ results, setResults, eventId }) {
+  // const [editingResultId, setEditingResultId] = useState(null);
+  // const [editPosition, setEditPosition]       = useState(1);
+
   const [editingResultId, setEditingResultId] = useState(null);
-  const [editPosition, setEditPosition]       = useState(1);
+const [editPosition, setEditPosition] = useState(1);
+const [message, setMessage] = useState('');
 
   const handleEdit = (r) => {
     setEditingResultId(r.resultId);
@@ -40,28 +44,72 @@ export default function ResultsTable({ results, setResults, eventId }) {
     setEditingResultId(null);
   };
 
-  const handleSave = async (r) => {
-    const teamId = r.resultId.replace(eventId, '');
-    try {
-      await axios.post('/vinterbash/enterResults', {
-        event_id: eventId,
-        team_id:  teamId,
-        position: editPosition,
-        points:   POSITION_POINTS[editPosition],
-      });
+  // const handleSave = async (r) => {
+  //   const teamId = r.resultId.replace(eventId, '');
+  //   try {
+  //     await axios.post('/vinterbash/enterResults', {
+  //       event_id: eventId,
+  //       team_id:  teamId,
+  //       position: editPosition,
+  //       points:   POSITION_POINTS[editPosition],
+  //     });
 
-      setResults((prev) =>
-        prev.map((result) =>
-          result.resultId === r.resultId
-            ? { ...result, position: editPosition, points: POSITION_POINTS[editPosition] }
-            : result
-        )
-      );
-      setEditingResultId(null);
-    } catch (err) {
-      console.error('Failed to update result:', err);
-    }
-  };
+  //     setResults((prev) =>
+  //       prev.map((result) =>
+  //         result.resultId === r.resultId
+  //           ? { ...result, position: editPosition, points: POSITION_POINTS[editPosition] }
+  //           : result
+  //       )
+  //     );
+  //     setEditingResultId(null);
+  //   } catch (err) {
+  //     console.error('Failed to update result:', err);
+  //   }
+  // };
+
+  const handleSave = async (r) => {
+  // Check if another team already has the selected position
+  const positionTaken = results.some(
+    (result) =>
+      result.resultId !== r.resultId &&
+      result.position === editPosition
+  );
+
+  if (positionTaken) {
+    alert(
+      `${editPosition === 1 ? '1st' : editPosition === 2 ? '2nd' : '3rd'} position is already assigned to another team.`
+    );
+    return;
+  }
+
+  const teamId = r.resultId.replace(eventId, '');
+
+  try {
+    await axios.post('/vinterbash/enterResults', {
+      event_id: eventId,
+      team_id: teamId,
+      position: editPosition,
+      points: POSITION_POINTS[editPosition],
+    });
+
+    setResults((prev) =>
+      prev.map((result) =>
+        result.resultId === r.resultId
+          ? {
+              ...result,
+              position: editPosition,
+              points: POSITION_POINTS[editPosition],
+            }
+          : result
+      )
+    );
+
+    setEditingResultId(null);
+  } catch (err) {
+    console.error('Failed to update result:', err);
+    alert('Failed to update result');
+  }
+};
 
   if (!results || results.length === 0) return null;
 
@@ -144,6 +192,21 @@ export default function ResultsTable({ results, setResults, eventId }) {
             </TableBody>
           </Table>
         </TableContainer>
+        {message && (
+  <Typography
+    sx={{
+      mt: 2,
+      fontWeight: 600,
+      color:
+        message.toLowerCase().includes('taken') ||
+        message.toLowerCase().includes('failed')
+          ? 'error.main'
+          : 'success.main',
+    }}
+  >
+    {message}
+  </Typography>
+)}
       </Paper>
     </Box>
   );

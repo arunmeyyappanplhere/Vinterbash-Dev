@@ -46,34 +46,90 @@ export default function EnterResults() {
   //   .catch((err) => console.error(err));
   // };
 
+  // const addRow = () => {
+  //   if (!selectedSchool || !selectedTeamId) {
+  //     setMessage('Select a school and team first');
+  //     return;
+  //   }
+  //   if (rows.find((r) => r.teamId === selectedTeamId)) {
+  //     setMessage('This team is already in the list');
+  //     return;
+  //   }
+  //   if(rows.find((r) => r.position === position)) {
+  //     setMessage(`${position === 1 ? '1st' : position === 2 ? '2nd' : '3rd'} place is already assigned`);
+  //     return;
+  //   }
+  //   const canAdd = true
+  //   rows.forEach(row => {
+  //     if (row.position == position ||  row.teamId == selectedTeam.tea){canAdd = false}     
+  //   });
+
+  //   canAdd && setRows((prev) => [
+  //     ...prev,
+  //     {
+  //       eventId,
+  //       eventName,
+  //       schoolName: selectedSchool,
+  //       teamId:     selectedTeam.teamId,
+  //       teamName:   selectedTeam.teamName,
+  //       members:    selectedTeam.members,
+  //       position,
+  //       points:     POSITION_POINTS[position],
+  //     },
+  //   ]);
+  //   canAdd && setMessage('');
+  // };
+
   const addRow = () => {
-    if (!selectedSchool || !selectedTeamId) {
-      setMessage('Select a school and team first');
-      return;
-    }
-    if (rows.find((r) => r.teamId === selectedTeamId)) {
-      setMessage('This team is already in the list');
-      return;
-    }
-    if(rows.find((r) => r.position === position)) {
-      setMessage(`${position === 1 ? '1st' : position === 2 ? '2nd' : '3rd'} place is already assigned`);
-      return;
-    }
-    setRows((prev) => [
-      ...prev,
-      {
-        eventId,
-        eventName,
-        schoolName: selectedSchool,
-        teamId:     selectedTeam.teamId,
-        teamName:   selectedTeam.teamName,
-        members:    selectedTeam.members,
-        position,
-        points:     POSITION_POINTS[position],
-      },
-    ]);
-    setMessage('');
-  };
+  if (!selectedSchool || !selectedTeamId) {
+    setMessage('Select a school and team first');
+    return;
+  }
+
+  // Pending rows
+  const teamExistsInRows = rows.some(
+    (r) => r.teamId === selectedTeamId
+  );
+
+  const positionExistsInRows = rows.some(
+    (r) => r.position === position
+  );
+
+  // Already saved results
+  const teamExistsInResults = results.some(
+    (r) => r.teamId === selectedTeamId
+  );
+
+  const positionExistsInResults = results.some(
+    (r) => r.position === position
+  );
+
+  if (teamExistsInRows || teamExistsInResults) {
+    setMessage('Team already on the result list');
+    return;
+  }
+
+  if (positionExistsInRows || positionExistsInResults) {
+    setMessage(
+      `${position === 1 ? '1st' : position === 2 ? '2nd' : '3rd'} position already taken`
+    );
+    return;
+  }
+  setRows((prev) => [
+    ...prev,
+    {
+      eventId,
+      eventName,
+      schoolName: selectedSchool,
+      teamId: selectedTeam.teamId,
+      teamName: selectedTeam.teamName,
+      members: selectedTeam.members,
+      position,
+      points: POSITION_POINTS[position],
+    },
+  ]);
+  setMessage('');
+};
 
   const removeRow = (idx) => setRows((prev) => prev.filter((_, i) => i !== idx));
 
@@ -97,16 +153,27 @@ export default function EnterResults() {
         )
       );
       setMessage('Results saved successfully');
+      // setResults((prev) => [
+      //   ...prev,
+      //   ...rows.map((r) => ({
+      //     resultId:   `${r.eventId}${r.teamId}`,
+      //     position:   r.position,
+      //     schoolName: r.schoolName,
+      //     eventName:  r.eventName,
+      //     members:    r.members,
+      //   })),
+      // ]);
       setResults((prev) => [
-        ...prev,
-        ...rows.map((r) => ({
-          resultId:   `${r.eventId}${r.teamId}`,
-          position:   r.position,
-          schoolName: r.schoolName,
-          eventName:  r.eventName,
-          members:    r.members,
-        })),
-      ]);
+  ...prev,
+  ...rows.map((r) => ({
+    resultId: `${r.eventId}${r.teamId}`,
+    teamId: r.teamId,
+    position: r.position,
+    schoolName: r.schoolName,
+    eventName: r.eventName,
+    members: r.members,
+  })),
+]);
       setRows([]);
       
     } catch (err) {
@@ -268,7 +335,7 @@ export default function EnterResults() {
                 <Typography className="empty-state">
                   Use the dropdowns above to add results to the list.
                 </Typography>
-              ) : (
+                ) : (
                 rows.map((r, i) => (
                   <Paper key={`${r.teamId}-${i}`} variant="outlined" className="participant-card">
                     <Grid container spacing={2} alignItems="center" className="participant-grid">
@@ -303,9 +370,9 @@ export default function EnterResults() {
                     </Grid>
                   </Paper>
                 ))
-              )}
-
-              <Box className="form-actions">
+                ) }
+                <ResultsTable results={results} setResults={setResults} eventId={eventId} />
+                <Box className="form-actions">
                 <Button
                   variant="outlined"
                   onClick={() => setRows([])}
@@ -322,9 +389,9 @@ export default function EnterResults() {
                 >
                   {loading ? 'Saving...' : 'Save results'}
                 </Button>
-              </Box>
+                </Box>
 
-              {message && (
+                {/* {message && (
                 <Typography
                   className={
                     message.toLowerCase().includes('fail') || message.toLowerCase().includes('error')
@@ -334,12 +401,26 @@ export default function EnterResults() {
                 >
                   {message}
                 </Typography>
-              )}
+                )} */}
+                {message && (
+                <Typography
+    className={
+      message.toLowerCase().includes('fail') ||
+      message.toLowerCase().includes('error') ||
+      message.toLowerCase().includes('already') ||
+      message.toLowerCase().includes('taken')
+        ? 'message-error'
+        : 'message-success'
+    }
+  >
+    {message}
+  </Typography>
+)}
             </Box>
           </Paper>
         </Grid>
       </Grid>
-      <ResultsTable results={results} setResults={setResults} eventId={eventId} />
+     
     </Box>
   );
 }

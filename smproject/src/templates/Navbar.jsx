@@ -9,13 +9,13 @@ import logo from '../assets/srivv_osa_logo.png'
 function Navbar({isSidebarOpen, setSidebarOpen }) {
   const [anchorEl,setAnchorEl]=useState(null);
   const isOpen=Boolean(anchorEl);
-  const [{staffName1,staffName2,schoolName},dispatch]=useStateValue();
+  const [{staffName1,staffName2,schoolName,organiserId},dispatch]=useStateValue();
   const navigate=useNavigate();
 
   
      function handleClose(e){
      
-      if(!staffName1&&!staffName2){
+      if(!staffName1&&!staffName2 && !organiserId){
         alert("Please fill the staff contact information from the Sidebar")
       }else{
     dispatch({
