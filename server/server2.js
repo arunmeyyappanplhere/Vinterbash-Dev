@@ -177,7 +177,8 @@ const Queries = {
   INSERT_SCHOOL: `INSERT INTO schools (school_id, school_name) VALUES ($1, (SELECT school_name FROM schools WHERE school_id = $1)) ON CONFLICT (school_id) DO NOTHING`,
   INSERT_TEAM: `INSERT INTO teams (team_id, event_id, school_id, team_name) VALUES ($1, $2, $3, $4)`,
   INSERT_PARTICIPANT: `INSERT INTO participants (participant_id, team_id, participant_name) VALUES ($1, $2, $3)`,
-  INSERT_RESULT: `INSERT INTO team_results (result_id, event_id, team_id, position, points) VALUES ($1, $2, $3, $4, $5)`,
+  INSERT_RESULT: `INSERT INTO team_results (result_id, event_id, team_id, position, points) VALUES ($1, $2, $3, $4, $5)
+  ON CONFLICT (result_id) DO UPDATE SET position = EXCLUDED.position, points = EXCLUDED.points`,
   GET_PARTICIPANTS_AND_EVENTS_BY_SCHOOL: `
         SELECT p.participant_name AS "participantName", e.event_name AS "eventName"
         FROM participants p JOIN teams t ON p.team_id = t.team_id JOIN events e ON t.event_id = e.event_id

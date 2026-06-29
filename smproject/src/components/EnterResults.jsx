@@ -339,7 +339,7 @@ export default function EnterResults() {
           </Paper>
         </Grid>
       </Grid>
-      <ResultsTable results={results} eventName={eventName} />
+      <ResultsTable results={results} setResults={setResults} eventId={eventId} />
     </Box>
   );
 }
