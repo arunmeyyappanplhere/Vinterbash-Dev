@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import axios from '../axios';
 import {
   Box,
@@ -18,7 +18,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 
-const POSITION_POINTS = { 1: 10, 2: 7, 3: 5 };
+const POSITION_POINTS = { 1: 10, 2: 5, 3: 3 };
 
 const positionLabel = (pos) => {
   if (pos === 1) return '🥇 1st';
@@ -27,17 +27,30 @@ const positionLabel = (pos) => {
   return pos;
 };
 
-export default function ResultsTable({ results, setResults, eventId }) {
+export default function ResultsTable({ results, setResults, eventId, allTeams }) {
   // const [editingResultId, setEditingResultId] = useState(null);
   // const [editPosition, setEditPosition]       = useState(1);
 
   const [editingResultId, setEditingResultId] = useState(null);
 const [editPosition, setEditPosition] = useState(1);
+const [editSchoolId, setEditSchoolId] = useState('');
+const [editTeamId, setEditTeamId] = useState('');
 const [message, setMessage] = useState('');
+const schoolOptions = [...new Map(allTeams.map((t) => [t.schoolName, t.schoolName])).keys()];
+const teamOptionsForEdit = useMemo(() => {
+  if (!editSchoolId) return [];
+  return allTeams.filter((t) => t.schoolName?.trim() === editSchoolId?.trim());
+}, [editSchoolId, allTeams]);
 
   const handleEdit = (r) => {
     setEditingResultId(r.resultId);
     setEditPosition(r.position);
+    setEditSchoolId(r.schoolName);
+    setEditTeamId(r.teamId);
+  };
+  const handleEditSchoolChange = (e) => {
+  setEditSchoolId(e.target.value);
+  setEditTeamId('');
   };
 
   const handleCancel = () => {
@@ -67,47 +80,126 @@ const [message, setMessage] = useState('');
   //   }
   // };
 
-  const handleSave = async (r) => {
-  // Check if another team already has the selected position
-  const positionTaken = results.some(
-    (result) =>
-      result.resultId !== r.resultId &&
-      result.position === editPosition
-  );
+//   const handleSave = async (r) => {
+//   // Check if another team already has the selected position
+//   const positionTaken = results.some(
+//     (result) =>
+//       result.resultId !== r.resultId &&
+//       result.position === editPosition
+//   );
 
-  if (positionTaken) {
-    alert(
-      `${editPosition === 1 ? '1st' : editPosition === 2 ? '2nd' : '3rd'} position is already assigned to another team.`
-    );
+//   if (positionTaken) {
+//     alert(
+//       `${editPosition === 1 ? '1st' : editPosition === 2 ? '2nd' : '3rd'} position is already assigned to another team.`
+//     );
+//     return;
+//   }
+
+//   const teamId = r.resultId.replace(eventId, '');
+
+//   try {
+//     await axios.post('/vinterbash/enterResults', {
+//       event_id: eventId,
+//       team_id: teamId,
+//       position: editPosition,
+//       points: POSITION_POINTS[editPosition],
+//     });
+
+//     setResults((prev) =>
+//       prev.map((result) =>
+//         result.resultId === r.resultId
+//           ? {
+//               ...result,
+//               position: editPosition,
+//               points: POSITION_POINTS[editPosition],
+//             }
+//           : result
+//       )
+//     );
+
+//     setEditingResultId(null);
+//   } catch (err) {
+//     console.error('Failed to update result:', err);
+//     alert('Failed to update result');
+//   }
+// };
+const handleSave = async (r) => {
+  if (!editTeamId) {
+    setMessage('Select a team');
     return;
   }
 
-  const teamId = r.resultId.replace(eventId, '');
+  // Check position conflict (excluding the row being edited)
+  const positionTaken = results.some(
+    (result) => result.resultId !== r.resultId && result.position === editPosition
+  );
+  if (positionTaken) {
+    setMessage(`${positionLabel(editPosition)} is already assigned to another team`);
+    return;
+  }
+
+  // Check team conflict (excluding the row being edited)
+  const teamTaken = results.some(
+    (result) => result.resultId !== r.resultId && result.teamId === editTeamId
+  );
+  if (teamTaken) {
+    setMessage('This team already has a result entered');
+    return;
+  }
+
+  const teamChanged = editTeamId !== r.teamId;
+  const selectedTeam = teamOptionsForEdit.find((t) => t.teamId === editTeamId);
 
   try {
-    await axios.post('/vinterbash/enterResults', {
-      event_id: eventId,
-      team_id: teamId,
-      position: editPosition,
-      points: POSITION_POINTS[editPosition],
-    });
+    if (teamChanged) {
+      // Delete old result, insert new one
+      await axios.delete(`/vinterbash/deleteResult/${r.resultId}`);
+      await axios.post('/vinterbash/enterResults', {
+        event_id: eventId,
+        team_id:  editTeamId,
+        position: editPosition,
+        points:   POSITION_POINTS[editPosition],
+      });
 
-    setResults((prev) =>
-      prev.map((result) =>
-        result.resultId === r.resultId
-          ? {
-              ...result,
-              position: editPosition,
-              points: POSITION_POINTS[editPosition],
-            }
-          : result
-      )
-    );
+      const newResultId = `${eventId}${editTeamId}`;
+      setResults((prev) =>
+        prev.map((result) =>
+          result.resultId === r.resultId
+            ? {
+                resultId:   newResultId,
+                teamId:     editTeamId,
+                position:   editPosition,
+                points:     POSITION_POINTS[editPosition],
+                schoolName: editSchoolId,
+                eventName:  r.eventName,
+                members:    selectedTeam.members,
+              }
+            : result
+        )
+      );
+    } else {
+      // Same team, just position changed
+      await axios.post('/vinterbash/enterResults', {
+        event_id: eventId,
+        team_id:  editTeamId,
+        position: editPosition,
+        points:   POSITION_POINTS[editPosition],
+      });
+
+      setResults((prev) =>
+        prev.map((result) =>
+          result.resultId === r.resultId
+            ? { ...result, position: editPosition, points: POSITION_POINTS[editPosition] }
+            : result
+        )
+      );
+    }
 
     setEditingResultId(null);
+    setMessage('');
   } catch (err) {
     console.error('Failed to update result:', err);
-    alert('Failed to update result');
+    setMessage('Failed to update result');
   }
 };
 
@@ -162,14 +254,51 @@ const [message, setMessage] = useState('');
                     )}
                   </TableCell>
                   <TableCell>
-                    <Typography variant="body2">
-                      {r.members.join(', ')}
-                    </Typography>
+                    {editingResultId === r.resultId ? (
+                      <Select
+                        value={editTeamId}
+                        onChange={(e) => setEditTeamId(e.target.value)}
+                        size="small"
+                        displayEmpty
+                        disabled={!editSchoolId}
+                        MenuProps={{ PaperProps: { style: { maxHeight: 300 } } }}
+                      >
+                        <MenuItem value="">
+                          {editSchoolId ? 'Select team' : 'Select a school first'}
+                        </MenuItem>
+                        {teamOptionsForEdit.map((t) => (
+                          <MenuItem key={t.teamId} value={t.teamId}>
+                            {`${t.teamId} — ${t.members.join(', ')}`}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    ) : (
+                      <Typography variant="body2">
+                        {r.members.join(', ')}
+                      </Typography>
+                    )}
                   </TableCell>
                   <TableCell>
-                    <Typography variant="body2" color="text.secondary">
-                      {r.schoolName}
-                    </Typography>
+                    {editingResultId === r.resultId ? (
+                      <Select
+                        value={editSchoolId}
+                        onChange={handleEditSchoolChange}
+                        size="small"
+                        displayEmpty
+                        MenuProps={{ PaperProps: { style: { maxHeight: 300 } } }}
+                      >
+                        <MenuItem value="">Select school</MenuItem>
+                        {schoolOptions.map((s) => (
+                          <MenuItem key={s} value={s}>
+                            {s}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    ) : (
+                      <Typography variant="body2" color="text.secondary">
+                        {r.schoolName}
+                      </Typography>
+                    )}
                   </TableCell>
                   <TableCell align="right">
                     {editingResultId === r.resultId ? (
@@ -193,20 +322,20 @@ const [message, setMessage] = useState('');
           </Table>
         </TableContainer>
         {message && (
-  <Typography
-    sx={{
-      mt: 2,
-      fontWeight: 600,
-      color:
-        message.toLowerCase().includes('taken') ||
-        message.toLowerCase().includes('failed')
-          ? 'error.main'
-          : 'success.main',
-    }}
-  >
-    {message}
-  </Typography>
-)}
+          <Typography
+            sx={{
+              mt: 2,
+              fontWeight: 600,
+              color:
+                message.toLowerCase().includes('taken') ||
+                message.toLowerCase().includes('failed')
+                  ? 'error.main'
+                  : 'success.main',
+            }}
+          >
+            {message}
+          </Typography>
+        )}
       </Paper>
     </Box>
   );

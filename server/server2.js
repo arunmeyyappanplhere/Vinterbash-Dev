@@ -179,6 +179,7 @@ const Queries = {
   INSERT_PARTICIPANT: `INSERT INTO participants (participant_id, team_id, participant_name) VALUES ($1, $2, $3)`,
   INSERT_RESULT: `INSERT INTO team_results (result_id, event_id, team_id, position, points) VALUES ($1, $2, $3, $4, $5)
   ON CONFLICT (result_id) DO UPDATE SET position = EXCLUDED.position, points = EXCLUDED.points`,
+  DELETE_RESULT: `DELETE FROM team_results WHERE result_id = $1`,
   GET_PARTICIPANTS_AND_EVENTS_BY_SCHOOL: `
         SELECT p.participant_name AS "participantName", e.event_name AS "eventName"
         FROM participants p JOIN teams t ON p.team_id = t.team_id JOIN events e ON t.event_id = e.event_id
@@ -318,6 +319,17 @@ router.post("/enterResults", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+//Barath's code for deleting results
+router.delete("/deleteResult/:resultId", async (req, res) => {
+  try {
+    const { resultId } = req.params;
+    await pool.query(Queries.DELETE_RESULT, [resultId]);
+    res.status(200).json({ message: "Result deleted successfully." });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 router.post("/organiserValidate", async (req, res) => {
   try {
@@ -386,6 +398,7 @@ router.post("/organiserValidate", async (req, res) => {
       if (!groupedMap[key]) {
         groupedMap[key] = {
           resultId: savedResult.result_id,
+          teamId: savedResult.team_id,
           position: savedResult.position,
           points:savedResult.points,
           schoolName: savedResult.school_name,

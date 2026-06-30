@@ -19,6 +19,7 @@ export default function EnterResults() {
   const allTeams  = assignedEvent?.particpants || [];
 
   const schoolOptions = [...new Map(allTeams.map((t) => [t.schoolName, t.schoolName])).keys()];
+  
 
   const [selectedSchool, setSelectedSchool] = useState('');
   const [selectedTeamId, setSelectedTeamId] = useState('');
@@ -371,7 +372,7 @@ export default function EnterResults() {
                   </Paper>
                 ))
                 ) }
-                <ResultsTable results={results} setResults={setResults} eventId={eventId} />
+                <ResultsTable results={results} setResults={setResults} eventId={eventId} allTeams={allTeams} />
                 <Box className="form-actions">
                 <Button
                   variant="outlined"
