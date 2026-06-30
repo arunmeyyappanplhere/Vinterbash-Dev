@@ -174,9 +174,11 @@ const Sidebar = ({ drawerWidth, isSidebarOpen, setSidebarOpen }) => {
       return text !== 'Participants' && text !== "Teacher's Info";
     }
     else if(organiserId){
-       return text !== "Teacher's Info";
+       return text === 'Dashboard' || text === 'Participants' || text === 'Enter Results';;
     }
-    return true; // Keep all items for others
+    else{
+      return text !== 'Enter Results';
+    }
   })
   .map(({ text }) => renderNavItem(text))}
 

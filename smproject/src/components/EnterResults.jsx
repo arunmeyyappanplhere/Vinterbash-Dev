@@ -9,7 +9,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ResultsTable from './ResultsTable';
 import './EnterResults.css';
 
-const POSITION_POINTS = { 1: 10, 2: 7, 3: 5 };
+const POSITION_POINTS = { 1: 10, 2: 5, 3: 3 };
 
 export default function EnterResults() {
   const [{ assignedEvent, organiserId, savedResults }] = useStateValue();
@@ -302,8 +302,8 @@ export default function EnterResults() {
                     className="input-select"
                   >
                     <MenuItem value={1}>🥇 1st — 10 pts</MenuItem>
-                    <MenuItem value={2}>🥈 2nd — 7 pts</MenuItem>
-                    <MenuItem value={3}>🥉 3rd — 5 pts</MenuItem>
+                    <MenuItem value={2}>🥈 2nd — 5 pts</MenuItem>
+                    <MenuItem value={3}>🥉 3rd — 3 pts</MenuItem>
                   </Select>
                 </Grid>
                 <Grid item xs={6} sm={3}>
