@@ -15,7 +15,7 @@ function Leaderboard() {
         "http://localhost:8000/vinterbash/leaderboard",
       );
       console.log(res.data.scores);
-      // setScores(res.data);
+      setScores(res.data);
     } catch (err) {
       console.error(err);
     }
