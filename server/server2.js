@@ -234,7 +234,29 @@ GET_SAVED_RESULTS:`SELECT p.participant_name, r.team_id, r.result_id, r.position
   JOIN events e ON e.event_id = t.event_id
   JOIN schools s ON s.school_id = t.school_id
   WHERE e.event_id = $1
-  ORDER BY r.position;`
+  ORDER BY r.position;`,
+GET_LEADERBOARD:
+
+`SELECT
+    s.school_name,
+    COALESCE(SUM(tr.points), 0) AS total_points,
+    e.event_name,
+    tr.position
+FROM schools s
+LEFT JOIN teams t
+    ON s.school_id = t.school_id
+LEFT JOIN team_results tr
+    ON t.team_id = tr.team_id
+LEFT JOIN events e
+    ON tr.event_id = e.event_id
+GROUP BY
+    s.school_name,
+    e.event_name,
+    tr.position
+ORDER BY
+    total_points DESC,
+    s.school_name;
+`,
 };
 // pushed by Arvindh Lakshman ends
 // ============================================================================
@@ -282,6 +304,42 @@ function buildEventWithTeams(rows, eventName) {
 // 5. API Routes (Controllers + Services Integrated)
 // ============================================================================
 const router = express.Router();
+
+router.get("/leaderboard", async (req, res) => {
+  try {
+    const { rows } = await pool.query(Queries.GET_LEADERBOARD);
+
+    const leaderboardMap = new Map();
+
+    rows.forEach((row) => {
+      if (!leaderboardMap.has(row.school_name)) {
+        leaderboardMap.set(row.school_name, {
+          school_name: row.school_name,
+          total_points: Number(row.total_points),
+          event_results: [],
+        });
+      }
+
+      if (row.event_name) {
+        leaderboardMap.get(row.school_name).event_results.push({
+          event_name: row.event_name,
+          position: row.position,
+        });
+      }
+    });
+
+    const leaderboard = [...leaderboardMap.values()].sort(
+      (a, b) => b.total_points - a.total_points
+    );
+
+    res.status(200).json(leaderboard);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: "Internal Server Error",
+    });
+  }
+});
 
 router.get("/cummulativeScores", async (req, res) => {
   try {
