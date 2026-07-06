@@ -306,39 +306,43 @@ function buildEventWithTeams(rows, eventName) {
 const router = express.Router();
 
 router.get("/leaderboard", async (req, res) => {
-  try {
-    const { rows } = await pool.query(Queries.GET_LEADERBOARD);
+    try {
+        const event = req.query.event || null;
 
-    const leaderboardMap = new Map();
+        const { rows } = await pool.query(
+            Queries.GET_LEADERBOARD,
+            [event]
+        );
 
-    rows.forEach((row) => {
-      if (!leaderboardMap.has(row.school_name)) {
-        leaderboardMap.set(row.school_name, {
-          school_name: row.school_name,
-          total_points: Number(row.total_points),
-          event_results: [],
+        const leaderboardMap = new Map();
+
+        rows.forEach(row => {
+
+            if (!leaderboardMap.has(row.school_name)) {
+                leaderboardMap.set(row.school_name,{
+                    school_name: row.school_name,
+                    total_points: Number(row.total_points),
+                    event_results:[]
+                });
+            }
+
+            if(row.event_name){
+                leaderboardMap.get(row.school_name).event_results.push({
+                    event_name: row.event_name,
+                    position: row.position
+                });
+            }
+
         });
-      }
 
-      if (row.event_name) {
-        leaderboardMap.get(row.school_name).event_results.push({
-          event_name: row.event_name,
-          position: row.position,
-        });
-      }
-    });
+        res.json([...leaderboardMap.values()].sort(
+            (a,b)=>b.total_points-a.total_points
+        ));
 
-    const leaderboard = [...leaderboardMap.values()].sort(
-      (a, b) => b.total_points - a.total_points
-    );
-
-    res.status(200).json(leaderboard);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      error: "Internal Server Error",
-    });
-  }
+    } catch(err){
+        console.error(err);
+        res.status(500).json({error:"Internal Server Error"});
+    }
 });
 
 router.get("/cummulativeScores", async (req, res) => {
