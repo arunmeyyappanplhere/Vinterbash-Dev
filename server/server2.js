@@ -307,11 +307,10 @@ const router = express.Router();
 
 router.get("/leaderboard", async (req, res) => {
     try {
-        const event = req.query.event || null;
-
+      
         const { rows } = await pool.query(
-            Queries.GET_LEADERBOARD,
-            [event]
+            Queries.GET_LEADERBOARD
+          
         );
 
         const leaderboardMap = new Map();
@@ -334,7 +333,7 @@ router.get("/leaderboard", async (req, res) => {
             }
 
         });
-
+      
         res.json([...leaderboardMap.values()].sort(
             (a,b)=>b.total_points-a.total_points
         ));
