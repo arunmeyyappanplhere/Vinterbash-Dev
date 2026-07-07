@@ -3,8 +3,7 @@ import './SignIn.css';
 import axios from '../axios';
 import { useStateValue } from '../StateProvider';
 import { useNavigate } from 'react-router-dom';
-import logo from '../assets/Vinterbash.png';
-import bg from '../assets/Vinterhills.jpeg';
+import logo from '../assets/vinterbash_2025_logo.png';
 import AnimatedPage from '../templates/AnimatedPage';
 
 function SignIn() {
@@ -82,7 +81,7 @@ function organiserSignin(e) {
 
     return (
         <AnimatedPage>
-        <div className='login' style={{backgroundImage: `url(${bg})`, backgroundSize: 'cover', backgroundPosition: 'center'}}>
+        <div className='login'>
             <img className='login_logo' src={logo} alt="Logo" onClick={() => navigate('/homepage')}/>
 
             <div className='login_container'>
@@ -110,7 +109,7 @@ function organiserSignin(e) {
                             <input type='text' value={schoolName} onChange={(e) => setSchoolName(e.target.value)}/>
                             <h5>Password</h5>
                             <input type='password' value={password} onChange={(e) => setPassword(e.target.value)}/>
-                            <button className='login_signin' type='button' onClick={schoolSignin}>Sign In</button>
+                            <button className='login_signin' type='submit' onClick={schoolSignin}>Sign In</button>
                         </form>
                         <p style={{color:"red"}}>Please paste the exact School Name and Password given</p>
                     </>
@@ -124,7 +123,7 @@ function organiserSignin(e) {
                             <input type='text' value={organiserName} onChange={(e) => setOrganiserName(e.target.value)}/>
                             <h5>Password</h5>
                             <input type='password' value={organiserPassword} onChange={(e) => setOrganiserPassword(e.target.value)}/>
-                            <button className='login_signin' type='button' onClick={schoolSignin}>Sign In</button>
+                            <button className='login_signin' type='submit' onClick={organiserSignin}>Sign In</button>
                         </form>
                         <p style={{color:"red"}}>Please use your organiser credentials</p>
                     </>

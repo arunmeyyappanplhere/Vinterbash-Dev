@@ -9,8 +9,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-height: 100vh;
-    background-color: transparent;
+    height: 100vh;
+    background-color: white;
     padding-bottom: 20px;
 }
 
@@ -20,9 +20,9 @@
     display: flex;
     flex-direction: column;
     border-radius: 5px;
-    border: 2px solid #1A0F08;
+    border: 2px solid #f9bc25;
     padding: 20px;
-    background-color: rgba(196, 168, 130, 0.85);
+    background-color: white;
 }
 
 .login_container >h1{
@@ -49,12 +49,19 @@
     font-size: 12px;
 }
 
-
+.login_signin{
+    background-color: #f9bc25;
+    border-radius: 5px;
+    width: 100%;
+    height: 30px;
+    border: 1px solid;
+    margin-top: 10px;
+    color: white;
+    font-weight: 650;
+}
 
 .login_signin:hover {
-  background-color: #3d2b1f !important;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
+  background-color:#ec7f40;
 }
 
 .login_register{
@@ -71,40 +78,25 @@
 .login_tabs {
     display: flex;
     margin-bottom: 20px;
-    border-bottom: 2px solid #1A0F08;
+    border-bottom: 2px solid #f9bc25;
 }
 
-.login_tab{
-    background-color: #1A0F08;
-    border-radius: 0px;
-    width: 100%;
-    height: 30px;
-    border: 1px solid #1A0F08;
-    margin-top: 10px;
-    color: white;
-    font-weight: 650;
-}
-
-.login_tab:hover {
-  background-color: #3d2b1f;
-  cursor: pointer;
+.login_tab {
+    flex: 1;
+    padding: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: gray;
 }
 
 .login_tab.active {
-  background-color: #3d2b1f;
+    color: #f9bc25;
+    border-bottom: 3px solid #f9bc25;
 }
-.login_signin{
-    background: #1A0F08 !important;
-    background-image: none !important;
-    border-radius: 0px;
-    width: 100%;
-    height: 30px;
-    border: 1px solid #1A0F08;
-    margin-top: 10px;
-    color: white !important;
-    font-weight: 650;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    -webkit-appearance: none;
-    appearance: none;
+
+.login_tab:hover {
+    color: #ec7f40;
 }
