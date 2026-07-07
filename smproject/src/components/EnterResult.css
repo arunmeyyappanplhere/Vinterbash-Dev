@@ -227,3 +227,36 @@
 .silver td { background-color: #f5f5f5; }
 .bronze td { background-color: #fff0e0; }
 .dq td { background-color: #ffe0e0; color: red; }
+
+.event-banner {
+  background: rgba(15, 23, 42, 0.04);
+  border-radius: 16px;
+  padding: 14px 20px;
+  margin-bottom: 8px;
+}
+
+.event-banner-label {
+  color: #64748b;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.event-banner-name {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.members-preview {
+  background: rgba(241, 245, 249, 0.8);
+  border-radius: 12px;
+  padding: 10px 16px;
+}
+
+.members-label {
+  color: #64748b;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 2px;
+}

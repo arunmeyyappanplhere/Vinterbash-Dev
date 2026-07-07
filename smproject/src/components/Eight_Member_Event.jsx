@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import axios from '../axios';
 import './Three_Member_Team.css';
+import { useStateValue } from '../StateProvider';
 import AnimatedPage from '../templates/AnimatedPage';
 import { useEffect } from 'react';
+import RegisteredTeam from './RegisteredTeam';
 
-function Eight_Member_Team({ eventId, eventName, registeredTeams, schoolId, teamIndex, minMember }) {
+function Eight_Member_Team({ eventId, eventName, registeredTeams, schoolId, teamIndex, minMember, onTeamUpdate }) {
   const [p1, setP1] = useState('');
   const [p2, setP2] = useState('');
   const [p3, setP3] = useState('');
@@ -13,6 +15,7 @@ function Eight_Member_Team({ eventId, eventName, registeredTeams, schoolId, team
   const [p6, setP6] = useState('');
   const [p7, setP7] = useState('');
   const [p8, setP8] = useState('');
+  const[{schoolName},dispatch]=useStateValue();
 
   const handleEvent = async (e) => {
     e.preventDefault();
@@ -36,8 +39,7 @@ function Eight_Member_Team({ eventId, eventName, registeredTeams, schoolId, team
       participantName: name
     }));
       try {
-        await axios.post('/vinterbash/register', {participants: participantArray,eventId,schoolId,teamId})
-      .then(() => {
+        await axios.post('/vinterbash/register', {participants: participantArray,eventId,schoolId,schoolName,teamId})
         // Reset fields
         setP1('');
         setP2('');
@@ -48,8 +50,9 @@ function Eight_Member_Team({ eventId, eventName, registeredTeams, schoolId, team
         setP7('');
         setP8('');
         alert('Added Successfully');
-      })
-      .catch((error) => alert(error.response?.data || 'Error adding team'));        
+        if (onTeamUpdate) {
+            onTeamUpdate();
+          }       
       } catch (error) {
         alert(error.response?.data || 'Error updating participants');
       }

@@ -36,24 +36,46 @@ function SignIn() {
         });
     }
 
-    function organiserSignin(e) {
-    e.preventDefault();
-    axios.post('/vinterbash/organiserValidate', {organiserName, password: organiserPassword})
+//     function organiserSignin(e) {
+//     e.preventDefault();
+//     axios.post('/vinterbash/organiserValidate', {organiserName, password: organiserPassword})
+//     .then((response) => {
+//         setOrganiserName("");
+//         setOrganiserPassword("");
+//         alert("Organiser Logged In");
+//         dispatch({
+//             type: 'organiserLogin',
+//             organiserName: response.data.organiserName,
+//             organiserId: response.data.organiserId,
+//             role: response.data.role
+//         });
+//         navigate("/organiserDashboard");
+//     })
+//     .catch((error) => {
+//         console.error(error);
+//         alert(error.response?.data?.error || "An unknown error occurred");
+//     });
+// }
+
+function organiserSignin(e) {
+  e.preventDefault();
+  axios.post('/vinterbash/organiserValidate', { organiserName, password: organiserPassword })
     .then((response) => {
-        setOrganiserName("");
-        setOrganiserPassword("");
-        alert("Organiser Logged In");
-        dispatch({
-            type: 'organiserLogin',
-            organiserName: response.data.organiserName,
-            organiserId: response.data.organiserId,
-            role: response.data.role
-        });
-        navigate("/organiserDashboard");
+      setOrganiserName("");
+      setOrganiserPassword("");
+      alert("Organiser Logged In");
+      dispatch({
+        type: 'organiserLogin',
+        organiserName: response.data.organiserName,
+        organiserId: response.data.organiserId,
+        role: response.data.role,
+        assignedEvent: response.data.assignedEvents, // ADD THIS
+      });
+      navigate("/organiserDashboard");
     })
     .catch((error) => {
-        console.error(error);
-        alert(error.response?.data?.error || "An unknown error occurred");
+      console.error(error);
+      alert(error.response?.data?.error || "An unknown error occurred");
     });
 }
 

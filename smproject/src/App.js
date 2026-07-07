@@ -8,7 +8,6 @@ import SignIn from './components/SignIn';
 import Layout from './templates/Layout';
 import Participants from './components/Participants';
 import Triquizzard from './Events/Triquizzard';
-import FIFA from './Events/FIFA';
 import Dashboard from './components/Dashboard';
 import Groupmusic from './Events/Groupmusic';
 import Improv from './Events/Improv';
@@ -30,6 +29,7 @@ import Homepage from './general/Homepage';
 import Events from './general/Events';
 import Contact from './general/Contact';
 import Navbar from './general/Navbar';
+import Chess from './Events/Chess';
 
 function App() {
   return (
@@ -55,13 +55,13 @@ function App() {
       <Route path='/classicaldance' element={<ClassicalDance/>}/>
       <Route path='/triquizzard' element={<Triquizzard/>}/>
       <Route path='/participants' element={<Participants/>}/>
-      <Route path='/fifa' element={<FIFA/>}/>
+      <Route path='/Chess' element={<Chess/>}/>
       <Route path='/groupmusic' element={<Groupmusic/>}/>
       <Route path='/improv' element={<Improv/>}/>
-      <Route path='/cube' element={<Cubing/>}/>
+      <Route path='/cubing' element={<Cubing/>}/>
       <Route path='/poster' element={<DigitalPosterDesign/>}/>
       <Route path='/tamillits' element={<TamilLits/>}/>
-      <Route path='/title' element={<TitleEvent/>}/>
+      <Route path='/titleevent' element={<TitleEvent/>}/>
       <Route path='/elits' element={<EnglishLits/>}/>
       <Route path='/cricket' element={<TurfCricket/>}/>
       <Route path='/football' element={<TurfFootball/>}/>
