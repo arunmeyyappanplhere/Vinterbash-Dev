@@ -10,7 +10,7 @@ function Statbox({title,value,increase,icon,description}) {
    justifyContent="space-between"
    height={"150px"}
    p="1.25rem 1rem"
-   backgroundColor={"#F68F04"}
+   backgroundColor={"rgba(10, 10, 10, 0.5)"}
    borderRadius="0.55rem"
    >
    {/* <FlexBetween> */}

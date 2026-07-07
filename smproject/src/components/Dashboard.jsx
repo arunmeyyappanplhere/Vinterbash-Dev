@@ -8,6 +8,7 @@ import { Navigate } from 'react-router-dom';
 import axios from '../axios';
 import AnimatedPage from '../templates/AnimatedPage';
 import logo from '../assets/Vinterbash_2025_first_page.png';
+import bg from '../assets/Vinterhills.jpeg';
 import StaffContact from './StaffContact';
 
 function Dashboard() {
@@ -32,32 +33,40 @@ function Dashboard() {
   <AnimatedPage>
     {schoolName === 'admin' ? (
       <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: { xs: '10px', sm: '20px', md: '40px' },
-          textAlign: 'center',
-          boxSizing: 'border-box',
-        }}
-      >
+  sx={{
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: { xs: '10px', sm: '20px', md: '40px' },
+    textAlign: 'center',
+    boxSizing: 'border-box',
+    minHeight: '100vh',
+    backgroundImage: `url(${bg})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+  }}
+>
         <FlexBetween sx={{ width: '100%', justifyContent: 'center' }}>
           <Header />
         </FlexBetween>
       </Box>
     ) : (
       <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: { xs: '10px', sm: '20px', md: '40px' },
-          textAlign: 'center',
-          boxSizing: 'border-box',
-        }}
-      >
+  sx={{
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: { xs: '10px', sm: '20px', md: '40px' },
+    textAlign: 'center',
+    boxSizing: 'border-box',
+    minHeight: '100vh',
+    backgroundImage: `url(${bg})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+  }}
+>
         <FlexBetween sx={{ width: '100%', justifyContent: 'center' }}>
           <Header />
         </FlexBetween>

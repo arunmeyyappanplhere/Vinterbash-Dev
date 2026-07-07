@@ -11,7 +11,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import FlexBetween from './FlexBetween';
-import logo from '../assets/vinter_logo_1.png';
+import logo from "../assets/Vinterbash.png";
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ExpandLess from '@mui/icons-material/ExpandLess';
@@ -102,11 +102,11 @@ const Sidebar = ({ drawerWidth, isSidebarOpen, setSidebarOpen }) => {
                     })
           }}
           sx={{
-            backgroundColor: isActive ? 'white' : 'transparent',
-            color: isActive ? 'black' : 'black',
+            backgroundColor: isActive ? 'rgba(255, 255, 255, 0.15)' : 'transparent',
+            color: isActive ? 'white' : 'white',
             '&:hover': {
-              backgroundColor: '#f5f5f5',
-            },
+  backgroundColor: 'rgba(255, 255, 255, 0.15)',
+},
             fontFamily: `'nevis', sans-serif`,fontWeight:'600',fontSize:'24px'
           }}
         >
@@ -131,11 +131,12 @@ const Sidebar = ({ drawerWidth, isSidebarOpen, setSidebarOpen }) => {
           sx={{
             width: drawerWidth,
             "& .MuiDrawer-paper": {  
-              backgroundColor: '#F68F04',
-              boxSizing: "border-box",
-              width: drawerWidth,
-              borderRight: "2px solid #ccc",
-            },
+  backgroundColor: 'rgba(10, 10, 10, 0.6)',
+  backdropFilter: 'blur(12px)',
+  boxSizing: "border-box",
+  width: drawerWidth,
+  borderRight: "1px solid rgba(255, 255, 255, 0.15)",
+},
           }}
           transitionDuration={{ enter: 400, exit: 300 }}
         >
@@ -147,14 +148,14 @@ const Sidebar = ({ drawerWidth, isSidebarOpen, setSidebarOpen }) => {
                     src={logo}
                     alt="logo"
                     width="140px"
-                    style={{ transform: 'rotate(70deg)',marginLeft:'10px' }}
+                    style={{ marginLeft:'10px', width: '120px', height: 'auto', filter: 'invert(1)' }}
                     onClick={() => {
                       navigate(`/dashboard`);
                     }}
                   />
                 </Box>
                 <IconButton onClick={() => setSidebarOpen(!isSidebarOpen)}>
-                  <ChevronLeftIcon />
+                 <ChevronLeftIcon sx={{ color: 'white' }} />
                 </IconButton>
               </FlexBetween>
             </Box>
@@ -172,8 +173,8 @@ const Sidebar = ({ drawerWidth, isSidebarOpen, setSidebarOpen }) => {
 
               {/* Events main item */}
               <ListItem disablePadding>
-                <ListItemButton onClick={handleEventsToggle}>
-                  <ListItemText primary="Events" sx={{ ml: "1rem" }} />
+                <ListItemButton onClick={handleEventsToggle} sx={{'&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.15)' }}}>
+                  <ListItemText primary="Events" sx={{ ml: "1rem", color: 'white' }} />
                   {eventsOpen ? <ExpandLess /> : <ExpandMore />}
                 </ListItemButton>
               </ListItem>
