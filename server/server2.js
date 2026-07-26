@@ -1,14 +1,14 @@
-const express = require("express");
-const cors = require("cors");
+const express = require('express');
+const cors = require('cors');
 // const { Pool } = require('pg');
-const pool = require("./db_setup");
-const crypto = require("crypto");
+const pool = require('./db_setup');
+const crypto = require('crypto');
 
 // ============================================================================
 // 1. App Configuration & Database Setup
 // ============================================================================
 const app = express();
-const PORT = 8000;
+const PORT = process.env.PORT || 8000;
 
 app.use(cors({
     origin: [
@@ -168,7 +168,7 @@ const filterRegisteredEventBySchool = (setOfRegistrations) => {
 const Queries = {
     VALIDATE_SCHOOL: `SELECT school_id, school_name FROM schools WHERE school_id = $1 AND password = $2`,
   VALIDATE_ORGANISER: `SELECT organizer_id FROM organizers WHERE organizer_name = $1 AND password = $2`,
-  GET_ALL_EVENTS: `SELECT event_name AS "eventName", event_id AS "eventId" FROM events`,
+    GET_ALL_EVENTS: `SELECT event_name AS "eventName", event_id AS "eventId", venue AS "venue", timings AS "timings" FROM events`,
   GET_ORGANISER_NAME: `SELECT organizer_name FROM organizers WHERE organizer_id = $1`,
   GET_SCHOOL_EVENT_REGISTRATION_STATUS: `
         SELECT s.school_id, s.school_name, e.event_id, e.max_teams_per_school, COUNT(t.team_id) AS registered_teams,teacher1name,teacher2name,teacher1number,teacher2number
@@ -667,7 +667,7 @@ router.post("/teacherRegister", async (req, res) => {
 router.get("/getAllEvents", async (req, res) => {
   try {
     const { rows } = await pool.query(Queries.GET_ALL_EVENTS);
-    res.status(200).json({ eventNames: rows.map((r) => r.eventName) }); // Note: aliased in SQL query
+    res.status(200).json({ events: rows }); // Note: aliased in SQL query
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }

@@ -12,8 +12,9 @@ function Contact() {
     axios
       .get("/vinterbash/getAllEvents")
       .then((response) => {
-        setEventNames(response.data.eventNames);
-        console.log("Event Names:", response.data.eventNames);
+      const names = response.data.events.map((e) => e.eventName);
+      setEventNames(names);
+      console.log("Event Names:", names);
       })
       .catch((error) => {
         console.error("Error fetching events:", error);
