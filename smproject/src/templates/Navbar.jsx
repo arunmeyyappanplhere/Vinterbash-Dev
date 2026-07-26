@@ -16,7 +16,7 @@ function Navbar({isSidebarOpen, setSidebarOpen }) {
   const isXs = useMediaQuery(theme.breakpoints.down('sm'));
 
   
-  function handleClose() {
+  function handleClose(e) {
      
       if(!staffName1&&!staffName2 && !organiserId){
         alert("Please fill the staff contact information from the Sidebar")
