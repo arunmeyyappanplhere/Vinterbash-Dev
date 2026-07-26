@@ -28,8 +28,14 @@ import Homepage from './general/Homepage';
 import Events from './general/Events';
 import Contact from './general/Contact';
 import Navbar from './general/Navbar';
+import Chess from './Events/Chess';
+import Poster2 from './Events/Poster 2';
 import Leaderboard from './general/Leaderboard';
 import OrganiserDashboard from './components/organiserDashboard';
+import Heritage from './Events/Heritage';
+import Auction from './Events/Auction';
+import EnglishLits1 from './Events/EnglishLits1';
+import GroupDance from './Events/GroupDance';
 import EnterResults from './components/EnterResults';
 
 function App() {
@@ -53,21 +59,30 @@ function App() {
       <Route path='/classicaldance' element={<ClassicalDance/>}/>
       <Route path='/triquizzard' element={<Triquizzard/>}/>
       <Route path='/participants' element={<Participants/>}/>
-      <Route path='/fifa' element={<FIFA/>}/>
+      <Route path='/Chess' element={<Chess/>}/>
       <Route path='/groupmusic' element={<Groupmusic/>}/>
       <Route path='/improv' element={<Improv/>}/>
       <Route path='/cubing' element={<Cubing/>}/>
-      <Route path='/poster' element={<DigitalPosterDesign/>}/>
-      <Route path='/tamillits' element={<TamilLits/>}/>
-      <Route path='/title' element={<TitleEvent/>}/>
-      <Route path='/elits' element={<EnglishLits/>}/>
+      <Route path='/poster1' element={<DigitalPosterDesign/>}/>
+      <Route path='/poster2' element={<Poster2/>}/>
+      <Route path='/tamillits1' element={<TamilLits/>}/>
+      <Route path='/tamillits2' element={<TamilLits/>}/>  
+      <Route path='/titleevent' element={<TitleEvent/>}/>
+      <Route path='/elits2' element={<EnglishLits/>}/>
+      <Route path='/elits1' element={<EnglishLits1/>}/>
       <Route path='/cricket' element={<TurfCricket/>}/>
       <Route path='/football' element={<TurfFootball/>}/>
       <Route path='/westerndance' element={<WesternDance/>}/>
       <Route path='/groupdrama' element={<GroupDrama/>}/>
       <Route path='/groupinst' element={<GroupIntrument/>}/>
-      <Route path='/art' element={<Art/>}/>
+      <Route path='/art1' element={<Art/>}/>
+      <Route path='/art2' element={<Art/>}/>
       <Route path='/code' element={<Coding/>}/>
+      <Route path='/screenplay' element={<Improv/>}/>
+      <Route path='/heritage' element={<Heritage/>}/>
+      <Route path='/shortfilm' element={<GroupDrama/>}/>
+      <Route path='/auction' element={<Auction/>}/>
+      <Route path='/groupdance' element={<GroupDance/>}/>
     </Route>
     </Routes>
     </BrowserRouter>

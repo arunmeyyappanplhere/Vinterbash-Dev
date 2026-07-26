@@ -11,7 +11,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import FlexBetween from './FlexBetween';
-import logo from '../assets/vinter_logo_1.png';
+import logo from "../assets/vbash_logo.png";
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ExpandLess from '@mui/icons-material/ExpandLess';
@@ -24,7 +24,6 @@ const navItems = [
   { text: "Participants" },
   { text: "Enter Results" },
   { text : "Teacher's Info"}
-
 ];
 
 const Sidebar = ({ drawerWidth, isSidebarOpen, setSidebarOpen }) => {
@@ -48,47 +47,67 @@ const Sidebar = ({ drawerWidth, isSidebarOpen, setSidebarOpen }) => {
 
     let lcText=''
 
-   if(text==='Dashboard'){
-    lcText=(organiserName && !schoolName) ? 'organiserDashboard' : 'dashboard';
-   }  
-   if (text === 'Chordially Yours!') {
+   
+    
+  if(text==='Dashboard'){
+  lcText=(organiserName && !schoolName) ? 'organiserDashboard' : 'dashboard';   
+}  
+  if (text === 'Chordially yours') {
   lcText = 'groupmusic';
-} else if (text === "Enter Results"){
-  lcText = 'enterResults';
 } else if (text==="Teacher's Info"){
    lcText = 'teacherInfo';
 } else if (text === 'Acoustic Nirvana') {
   lcText = 'groupinst';
-} else if (text === 'Nalla Otrainga da Reel-uh!') {
+} else if (text === 'Sakkarapongalukku vadacurry') {
   lcText = 'groupdrama';
-} else if (text === 'Imitation Game') {
+} else if (text === 'Imitation game') {
   lcText = 'improv';
-} else if (text === 'Unnai Kaanathu..!!') {
+} else if (text === 'Aththinthom!') {
   lcText = 'classicaldance';
-} else if (text === 'Drop the Beat') {
+} else if (text === 'Naa ready dhan varava?') {
   lcText = 'westerndance';
+} else if (text === 'Arangam Adhiratumae') {
+  lcText = 'groupdance';
 } else if (text === 'Ar(T)elic!') {
-  lcText = 'art';
-} else if (text === 'DOOMSDAY: The Final Frame') {
-  lcText = 'poster';
-} else if (text === 'Koodu Vittu Koodu') {
-  lcText = 'tamillits';
-} else if (text === "Time Traveller's Theatre") {
-  lcText = 'elits';
-} else if (text === 'The Triquizzard Tournament 5.O') {
+  lcText = 'art1';
+} else if (text === 'Kaapé D Art') {
+  lcText = 'art2';
+} else if (text === 'Brand New Day: The First Frame') {
+  lcText = 'poster1';
+} else if (text === 'Vector VOID') {
+  lcText = 'poster2';
+} else if (text === 'வாயுள்ள பிள்ளை பிழைத்துக் கொள்ளும்') {
+  lcText = 'tamillits1';
+} else if (text === 'முடிவு இங்கே! கதை எங்கே?') {
+  lcText = 'tamillits2';
+} else if (text === 'Screenplay') {
+  lcText = 'screenplay';
+} else if (text === "Signal & Noise") {
+  lcText = 'elits1';
+} else if (text === "CIPHER") {
+  lcText = 'elits2';
+} else if (text === 'The Triquizzard Tournament 6.0') {
   lcText = 'triquizzard';
-} else if (text === 'Ctrl + Alt + Decrypt') {
+} else if (text === 'Vinter CTF – 2026') {
   lcText = 'code';
-} else if (text === 'No Time To Solve') {
-  lcText = 'cube';
+} else if (text === 'Cubing') {
+  lcText = 'cubing';
 } else if (text === 'Vinter Bowl-Out: Turf Cricket') {
   lcText = 'cricket';
 } else if (text === 'Vinter Kick-Off: 5-A Side Football') {
   lcText = 'football';
-} else if (text === 'Coronation: Mr. & Ms. Vinterbash') {
-  lcText = 'title';
-} else if (text === "Vinter Goal-Rush: FIFA '25") {
-  lcText = 'fifa';
+} else if (text === 'The One - Mr and Ms Vinterbash') {
+  lcText = 'titleevent';
+} else if (text === "Vinter Chess Tournament - 2026") {
+  lcText = 'chess';
+} else if (text === "Vinter Premiere League - Auction") {
+  lcText = 'auction';
+} else if (text === "Thirai @180°") {
+  lcText = 'shortfilm';
+} else if (text === "Heritage Quest - 2026") {
+  lcText = 'heritage';
+} else if (text === "Enter Results"){
+  lcText = 'enterResults';
 } else {
   lcText = text.toLowerCase(); // default fallback
 }
@@ -96,8 +115,8 @@ const Sidebar = ({ drawerWidth, isSidebarOpen, setSidebarOpen }) => {
        
 
     return (
-      <AnimatedPage>
-      <ListItem key={text} disablePadding>
+      <AnimatedPage key={text}>
+      <ListItem disablePadding>
         <ListItemButton
           onClick={() => {
             navigate(`/${lcText}`);
@@ -109,16 +128,16 @@ const Sidebar = ({ drawerWidth, isSidebarOpen, setSidebarOpen }) => {
                     })
           }}
           sx={{
-            backgroundColor: isActive ? 'white' : 'transparent',
+            backgroundColor: isActive ? 'rgba(0, 0, 0, 0.08)' : 'transparent',
             color: isActive ? 'black' : 'black',
             '&:hover': {
-              backgroundColor: '#f5f5f5',
-            },
+  backgroundColor: 'rgba(0, 0, 0, 0.08)',
+},
             fontFamily: `'nevis', sans-serif`,fontWeight:'600',fontSize:'24px'
           }}
         >
           <ListItemText primary={text} sx={{ ml: "1rem" }} />
-          {isActive && <ChevronRightIcon sx={{ ml: "auto" }} />}
+          {isActive && <ChevronRightIcon sx={{ ml: "auto", color: 'black' }} />}
         </ListItemButton>
       </ListItem>
       </AnimatedPage>
@@ -138,10 +157,13 @@ const Sidebar = ({ drawerWidth, isSidebarOpen, setSidebarOpen }) => {
           sx={{
             width: drawerWidth,
             "& .MuiDrawer-paper": {  
-              backgroundColor: '#F68F04',
+              backgroundColor: 'rgba(255, 255, 255, 0.25)',
+              backdropFilter: 'blur(15px)',
+              WebkitBackdropFilter: 'blur(15px)',
               boxSizing: "border-box",
               width: drawerWidth,
-              borderRight: "2px solid #ccc",
+              borderRight: "1px solid rgba(255, 255, 255, 0.3)",
+              boxShadow: "none",
             },
           }}
           transitionDuration={{ enter: 400, exit: 300 }}
@@ -154,14 +176,14 @@ const Sidebar = ({ drawerWidth, isSidebarOpen, setSidebarOpen }) => {
                     src={logo}
                     alt="logo"
                     width="140px"
-                    style={{ transform: 'rotate(70deg)',marginLeft:'10px' }}
+                    style={{ marginLeft:'10px', filter: 'brightness(0) saturate(100%)', width: '120px', height: 'auto' }}
                     onClick={() => {
                       navigate(`/dashboard`);
                     }}
                   />
                 </Box>
                 <IconButton onClick={() => setSidebarOpen(!isSidebarOpen)}>
-                  <ChevronLeftIcon />
+                  <ChevronLeftIcon sx={{ color: 'black' }} />
                 </IconButton>
               </FlexBetween>
             </Box>
@@ -169,7 +191,7 @@ const Sidebar = ({ drawerWidth, isSidebarOpen, setSidebarOpen }) => {
             <List>
               {navItems
   .filter(({ text }) => {
-    if (schoolId === '999' ) {
+    if (schoolId === '999') {
       // Hide Participants and Teacher's Info for admin
       return text !== 'Participants' && text !== "Teacher's Info";
     }
@@ -186,8 +208,8 @@ const Sidebar = ({ drawerWidth, isSidebarOpen, setSidebarOpen }) => {
               {!organiserId &&
               <ListItem disablePadding>
                 <ListItemButton onClick={handleEventsToggle}>
-                  <ListItemText primary="Events" sx={{ ml: "1rem" }} />
-                  {eventsOpen ? <ExpandLess /> : <ExpandMore />}
+                  <ListItemText primary="Events" sx={{ ml: "1rem", color: 'black' }} />
+                  {eventsOpen ? <ExpandLess sx={{ color: 'black' }} /> : <ExpandMore sx={{ color: 'black' }} />}
                 </ListItemButton>
               </ListItem>
 }

@@ -10,16 +10,19 @@ const crypto = require("crypto");
 const app = express();
 const PORT = 8000;
 
-app.use(
-  cors({
-    // origin: [
+app.use(cors({
+    origin: [
     //     "http://ec2-184-73-128-194.compute-1.amazonaws.com",
     //     "http://ec2-184-73-128-194.compute-1.amazonaws.com:3000",
     //     "http://vinterbash.in:3000", "vinterbash.in:3000",
+    "https://vinter2-0-xtdb.vercel.app",
     //     "https://vinterbash.in", "http://vinterbash.in", "http://localhost:3000/"
-    // ]
-  }),
-);
+        "https://www.vinterbash.co.in",
+        "https://vinterbash.co.in",
+        "http://localhost:3001",
+        "http://vinterbash-alb-1429442373.us-east-1.elb.amazonaws.com/"
+    ]
+}));
 app.use(express.json());
 
 // Initialize PostgreSQL Connection Pool (Replace with actual credentials)
@@ -163,12 +166,12 @@ const filterRegisteredEventBySchool = (setOfRegistrations) => {
 // 3. Database Queries
 // ============================================================================
 const Queries = {
-  VALIDATE_SCHOOL: `SELECT school_id FROM schools WHERE school_name = $1 AND password = $2`,
+    VALIDATE_SCHOOL: `SELECT school_id, school_name FROM schools WHERE school_id = $1 AND password = $2`,
   VALIDATE_ORGANISER: `SELECT organizer_id FROM organizers WHERE organizer_name = $1 AND password = $2`,
   GET_ALL_EVENTS: `SELECT event_name AS "eventName", event_id AS "eventId" FROM events`,
   GET_ORGANISER_NAME: `SELECT organizer_name FROM organizers WHERE organizer_id = $1`,
   GET_SCHOOL_EVENT_REGISTRATION_STATUS: `
-        SELECT s.school_id, s.school_name, e.event_id, e.max_teams_per_school, COUNT(t.team_id) AS registered_teams
+        SELECT s.school_id, s.school_name, e.event_id, e.max_teams_per_school, COUNT(t.team_id) AS registered_teams,teacher1name,teacher2name,teacher1number,teacher2number
         FROM schools s CROSS JOIN events e LEFT JOIN teams t ON t.school_id = s.school_id AND t.event_id = e.event_id
         WHERE s.school_id = $1 GROUP BY s.school_id, s.school_name, e.event_id, e.max_teams_per_school
     `,
@@ -402,9 +405,8 @@ router.post("/organiserValidate", async (req, res) => {
       organiserName,
       password,
     ]);
-    const organiserNameRes = await pool.query(Queries.GET_ORGANISER_NAME, [
-      organiserName,
-    ]);
+    console.log("organiserRes:", organiserRes.rows);
+    const organiserNameRes = organiserName
 
     const assignedEventsRes = await pool.query(
       Queries.GET_ASSIGNED_EVENTS_BY_ORG,
@@ -494,73 +496,45 @@ router.post("/organiserValidate", async (req, res) => {
 });
 
 router.post("/validate", async (req, res) => {
-  try {
-    /** @type {ValidateRequest} */
-    const { schoolName, password } = req.body;
-    console.log("requests:", req.body);
+ try {
+        /** @type {ValidateRequest} */
+        const { schoolId, password } = req.body;
+        console.log(schoolId, password);
+        const schoolRes = await pool.query(Queries.VALIDATE_SCHOOL,[schoolId, password]);
+        
+        if (schoolRes.rows.length === 0)
+        return res.status(401).json({ error: "Invalid" });
 
-    const schoolRes = await pool.query(Queries.VALIDATE_SCHOOL, [
-      schoolName,
-      password,
-    ]);
-    if (schoolRes.rows.length === 0)
-      return res.status(401).json({ error: "Invalid" });
+        const eventsRes = await pool.query(Queries.GET_ALL_EVENTS);
 
-    const eventsRes = await pool.query(Queries.GET_ALL_EVENTS);
-    const RegisteredEventsRes = await pool.query(
-      Queries.GET_SCHOOL_REGISTERED_EVENTS,
-      [schoolRes.rows[0].school_id],
-    );
-
-    /** @type {ValidateResponse} */
-    const responseData = {
-      schoolId: schoolRes.rows[0].school_id,
-      schoolName,
-      events: eventsRes.rows,
-      eventsReg: filterRegisteredEventBySchool(RegisteredEventsRes.rows),
-    };
-    return res.status(200).json(responseData);
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
+        const responseData = {
+        schoolId: schoolRes.rows[0].school_id,
+        schoolName: schoolRes.rows[0].school_name,
+        events: eventsRes.rows
+        }; return res.status(200).json(responseData);
+    } catch (error) { res.status(500).json({ error: "Internal Server Error" }); }
 });
 
-router.post("/registeredEvents", async (req, res) => {
-  try {
-    const { schoolId } = req.body;
-    const { rows } = await pool.query(
-      Queries.GET_SCHOOL_EVENT_REGISTRATION_STATUS,
-      [schoolId],
-    );
-    if (rows.length === 0)
-      return res
-        .status(404)
-        .send("School ID not found or no events available.");
+router.post('/registeredEvents', async (req, res) => {
+    try {
+        const { schoolId } = req.body;
+        const { rows } = await pool.query(Queries.GET_SCHOOL_EVENT_REGISTRATION_STATUS, [schoolId]);
+        if (rows.length === 0) return res.status(404).send("School ID not found or no events available.");
 
-    let fully = 0,
-      partially = 0,
-      none = 0,
-      schoolName = null;
-    rows.forEach((row) => {
-      const registered = parseInt(row.registered_teams, 10);
-      const max = parseInt(row.max_teams_per_school, 10);
-      if (registered === 0) none++;
-      else if (registered < max) partially++;
-      else fully++;
-      schoolName = row.school_name;
-    });
+        let fully = 0, partially = 0, none = 0, schoolName = null;
+        rows.forEach(row => {
+            const registered = parseInt(row.registered_teams, 10);
+            const max = parseInt(row.max_teams_per_school, 10);
+            if (registered === 0) none++; else if (registered < max) partially++; else fully++;
+            schoolName = row.school_name;
+            teacher1name=row.teacher1name;
+            teacher2name=row.teacher2name;
+            teacher1number=row.teacher1number;
+            teacher2number=row.teacher2number;
+        });
 
-    res.status(200).json({
-      schoolId,
-      schoolName,
-      fullyRegistered: fully,
-      partiallyRegistered: partially,
-      notRegistered: none,
-    });
-  } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
-  }
+        res.status(200).json({ schoolId, schoolName,teacher1name,teacher2name,teacher1number,teacher2number, fullyRegistered: fully, partiallyRegistered: partially, notRegistered: none });
+    } catch (error) { res.status(500).json({ error: "Internal Server Error" }); }
 });
 
 router.post("/register", async (req, res) => {
@@ -699,6 +673,16 @@ router.get("/getAllEvents", async (req, res) => {
   }
 });
 
+router.get('/health', async (req, res) => {
+    try {
+        await pool.query('SELECT 1');
+        res.status(200).json({ status: 'ok' });
+    } catch (error) {
+        res.status(500).json({ status: 'error' });
+    }
+});
+
+
 router.post("/teacherInfo", async (req, res) => {
   try {
     const { schoolId } = req.body;
@@ -707,6 +691,7 @@ router.post("/teacherInfo", async (req, res) => {
       return res.status(404).json({ error: "Teacher info not found" });
 
     // Maps to TeacherInfoResponse
+    console.log("Teacher Info:", rows[0]);
     res.status(200).json(rows[0]);
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });

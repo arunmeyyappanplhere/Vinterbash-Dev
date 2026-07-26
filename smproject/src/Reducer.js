@@ -43,6 +43,7 @@ function reducer(state, action) {
         activeEventId: action.activeEventId,
       };
     case 'staff':
+      console.log("Reducer payload", action.payload);
       return {
         ...state,
         staffName1: action.payload.staff1Name,

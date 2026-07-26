@@ -3,12 +3,14 @@ import './SignIn.css';
 import axios from '../axios';
 import { useStateValue } from '../StateProvider';
 import { useNavigate } from 'react-router-dom';
-import logo from '../assets/vinterbash_2025_logo.png';
+import logo from '../assets/vbash_logo.png';
+import bgImage from "../assets/vbash_bg.jpeg";
 import AnimatedPage from '../templates/AnimatedPage';
+import { Box } from '@mui/material';
 
 function SignIn() {
     const [activeTab, setActiveTab] = useState('school');
-    const [schoolName, setSchoolName] = useState('');
+    const [schoolId, setSchoolId] = useState('');
     const [password, setPassword] = useState('');
     const [organiserName, setOrganiserName] = useState('');
     const [organiserPassword, setOrganiserPassword] = useState('');
@@ -17,9 +19,9 @@ function SignIn() {
 
     function schoolSignin(e) {
         e.preventDefault();
-        axios.post('/vinterbash/validate', {schoolName, password})
+        axios.post('/vinterbash/validate', {schoolId, password})
         .then((response) => {
-            setSchoolName("");
+            setSchoolId("");
             setPassword("");
             alert("Logged In");
             dispatch({
@@ -81,8 +83,13 @@ function organiserSignin(e) {
 
     return (
         <AnimatedPage>
-        <div className='login'>
-            <img className='login_logo' src={logo} alt="Logo" onClick={() => navigate('/homepage')}/>
+            <Box style={{ "--vb-bg-image": `url(${bgImage})` }}>
+        <div className='login' style={{ "--vb-bg-image": `url(${bgImage})` }}>
+           
+                <img className='login_logo' src={logo} alt="Logo" onClick={()=>{
+                    navigate(`/homepage`)
+                }}/>
+            
 
             <div className='login_container'>
                 {/* Tabs */}
@@ -105,13 +112,13 @@ function organiserSignin(e) {
                 {activeTab === 'school' && (
                     <>
                         <form>
-                            <h5>School Name</h5>
-                            <input type='text' value={schoolName} onChange={(e) => setSchoolName(e.target.value)}/>
-                            <h5>Password</h5>
+                    <h5 style={{ color: '#000000' }}>School ID</h5>
+                            <input type='text' value={schoolId} onChange={(e) => setSchoolId(e.target.value)}/>
+                    <h5 style={{ color: '#000000' }}>Password</h5>
                             <input type='password' value={password} onChange={(e) => setPassword(e.target.value)}/>
                             <button className='login_signin' type='submit' onClick={schoolSignin}>Sign In</button>
                         </form>
-                        <p style={{color:"red"}}>Please paste the exact School Name and Password given</p>
+                        <p style={{color:"red"}}>Please paste the exact School ID and Password given</p>
                     </>
                 )}
 
@@ -133,8 +140,9 @@ function organiserSignin(e) {
                 <p>For further queries contact : 7010089170</p>
             </div>
         </div>
-        </AnimatedPage>
-    );
+      </Box>
+    </AnimatedPage>
+  );
 }
 
 export default SignIn;

@@ -3,12 +3,11 @@ import axios from '../axios';
 import './Triquizzard.css'
 import { useStateValue } from '../StateProvider';
 import RegisteredTeam from '../components/RegisteredTeam';
-import Eight_Member_Team from '../components/Eight_Member_Event';
 import { Navigate } from 'react-router-dom';
 import AnimatedPage from '../templates/AnimatedPage';
-import Ten_Member_Team from '../components/Ten_Member_Team';
+import Three_Member_Team from '../components/Three_Member_Team';
 
-function TurfFootball() {
+function Auction() {
   const [{ schoolName, activeEvent, schoolId,activeEventId }, dispatch] = useStateValue();
   const [registeredTeams, setRegisteredTeams] = useState([]);
   const [eventId, setEventId] = useState();
@@ -34,17 +33,29 @@ function TurfFootball() {
 
   return schoolName?(
     <AnimatedPage>
-    {schoolName != 'admin' ?
-    <div className='ThreePEvent'>
+      {schoolName !== 'admin' ?
+    <div 
+      className='ThreePEvent'
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '20px',
+        width: '100%',
+        padding: '20px 0',
+        boxSizing: 'border-box'
+      }}
+    >
+
   {Array.from({ length: 1 - registeredTeams.length }).map((_, i) => (
-    <Ten_Member_Team
+    <Three_Member_Team
       key={`new-team-${i + 1}`}
       eventId={activeEventId}
       eventName={activeEvent}
       registeredTeams={registeredTeams}
       schoolId={schoolId}
+      minMember={3}
       teamIndex={registeredTeams.length + i + 1}
-      minMember={6}
       onTeamUpdate={fetchTeams} 
     />
   ))}
@@ -54,15 +65,28 @@ function TurfFootball() {
       key={team.teamId}
       team={team}
       eventId={activeEventId}
-      eventName={activeEvent}
       schoolId={schoolId}
       teamIndex={index + 1}
-      maxMember={8}
+      eventName={activeEvent}
+      maxMember={3}
       onTeamUpdate={fetchTeams} 
     />
   ))}
+  
 </div>
-: <div className='ThreePEvent'>
+: <div 
+    className='ThreePEvent'
+    style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      gap: '20px',
+      width: '100%',
+      padding: '20px 0',
+      boxSizing: 'border-box'
+    }}
+  >
+
         {registeredTeams.map((team, index) => (
           <RegisteredTeam
             key={team.teamId}
@@ -78,8 +102,7 @@ function TurfFootball() {
     }
 </AnimatedPage>
   ):(<Navigate to={'/signIn'} replace={true}/>
-
   );
 }
 
-export default TurfFootball;
+export default Auction;

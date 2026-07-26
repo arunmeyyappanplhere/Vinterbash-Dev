@@ -5,9 +5,9 @@ import './Triquizzard.css';
 import Three_Member_Team from '../components/Three_Member_Team';
 import { useStateValue } from '../StateProvider';
 import RegisteredTeam from '../components/RegisteredTeam';
-import One_Member_Event from '../components/One_Member_Event';
 import { Navigate } from 'react-router-dom';
 import AnimatedPage from '../templates/AnimatedPage';
+import Two_Member_Event from '../components/Two_Member_Event';
 
 function TamilLits() {
   const [{ schoolName, activeEvent, schoolId, activeEventId }] = useStateValue();
@@ -42,7 +42,7 @@ function TamilLits() {
       <div className="ThreePEvent">
         {/* Render unregistered team forms */}
         {Array.from({ length: Math.max(0, 2 - registeredTeams.length) }).map((_, i) => (
-          <One_Member_Event
+          <Two_Member_Event
             key={`new-team-${i + 1}`}
             eventId={activeEventId}
             eventName={activeEvent}

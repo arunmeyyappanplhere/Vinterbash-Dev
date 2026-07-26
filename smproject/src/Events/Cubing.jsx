@@ -18,7 +18,7 @@ function Cubing() {
     axios
       .post(`/vinterbash/events`, { schoolName, activeEvent })
       .then((response) => {
-        console.log('InsideTriquizzard-->', response.data);
+        console.log('InsideCubing-->', response.data);
         setRegisteredTeams(response.data.teams);
         setEventId(response.data.eventId);
       })
@@ -35,7 +35,7 @@ function Cubing() {
     <AnimatedPage>
      {schoolName != 'admin' ?
     <div className='ThreePEvent'>
-      {Array.from({ length: 2 - registeredTeams.length }).map((_, i) => (
+      {Array.from({ length: 3 - registeredTeams.length }).map((_, i) => (
     <One_Member_Event
       key={`new-team-${i + 1}`}
       eventId={activeEventId}

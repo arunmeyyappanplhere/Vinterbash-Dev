@@ -1,4 +1,77 @@
-/* Existing styles untouched */
+@import url("https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@400;500;600;700;800&display=swap");
+
+/* ============================================================
+   Contact.css
+   Restyled to match Homepage.css's visual language exactly:
+   same raw background image (no overlay/tint), same Anton/Poppins
+   typography, dark text over the image. Same class names + grid
+   structure as the original — only the look is updated (glass
+   cards + spacing).
+   ============================================================ */
+
+/* ===== page wrapper (matches .vb-page from the homepage) ===== */
+.vb-contact-page {
+  position: relative;
+  min-height: 100vh;
+  padding: 2.5rem 6% 4rem;
+  background-image: var(--vb-bg-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  animation: fade 1.2s ease-in-out;
+  box-sizing: border-box;
+}
+
+@keyframes fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes vb-cardIn {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== headings ===== */
+.Contacttext {
+  text-align: center;
+  animation: fade 1.2s ease-in-out;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-family: "Anton", "Arial Black", Impact, sans-serif;
+  font-weight: 600;
+  line-height: 1.1;
+  color: #000000;
+  margin: 0 0 2.5rem;
+}
+
+.Contact {
+  color: #111111;
+  font-family: "Poppins", "Segoe UI", Arial, sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+  letter-spacing: 0.02em;
+  text-align: center;
+  margin: 3rem 0 1.5rem;
+  text-shadow: 0 2px 10px rgba(255, 255, 255, 0.38);
+}
+
+/* ===== grid ===== */
+.contactgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 300px));
+  justify-content: center;
+  align-items: stretch;
+  gap: 2rem;
+  margin: 0 auto 3rem;
+  width: 100%;
+  max-width: 1100px;
+  box-sizing: border-box;
+}
+
+/* ===== glass card ===== */
 .contactCard {
   position: relative;
   display: flex;

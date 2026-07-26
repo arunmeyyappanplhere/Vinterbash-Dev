@@ -5,9 +5,9 @@ import './Triquizzard.css'
 
 import { useStateValue } from '../StateProvider';
 import RegisteredTeam from '../components/RegisteredTeam';
-import Four_Member_Event from '../components/Four_Member_Event';
 import { Navigate } from 'react-router-dom';
 import AnimatedPage from '../templates/AnimatedPage';
+import Two_Member_Event from '../components/Two_Member_Event';
 
 function EnglishLits() {
   const [{ schoolName, activeEvent, schoolId,activeEventId }, dispatch] = useStateValue();
@@ -37,8 +37,8 @@ function EnglishLits() {
     <AnimatedPage>
      {schoolName != 'admin' ?
     <div className='ThreePEvent'>
-      {Array.from({ length: 1 - registeredTeams.length }).map((_, i) => (
-    <Four_Member_Event
+      {Array.from({ length: 2 - registeredTeams.length }).map((_, i) => (
+    <Two_Member_Event
       key={`new-team-${i + 1}`}
       eventId={activeEventId}
       eventName={activeEvent}

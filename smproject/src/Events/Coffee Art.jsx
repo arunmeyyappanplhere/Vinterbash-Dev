@@ -35,19 +35,8 @@ function Art() {
   // Pass fetchTeams to child components if they need to refresh the list
   return schoolName ? (
     <AnimatedPage>
-    {schoolName !== 'admin' ?
-      <div 
-        className='ThreePEvent'
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '20px',
-          width: '100%',
-          padding: '20px 0',
-          boxSizing: 'border-box'
-        }}
-      >
+    {schoolName != 'admin' ?
+      <div className='ThreePEvent'>
         {Array.from({ length: 2 - registeredTeams.length }).map((_, i) => (
           <One_Member_Event
             key={`new-team-${i + 1}`}
@@ -73,18 +62,8 @@ function Art() {
           />
         ))}
       </div>
-      : <div 
-          className='ThreePEvent'
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '20px',
-            width: '100%',
-            padding: '20px 0',
-            boxSizing: 'border-box'
-          }}
-        >
+      : <div className='ThreePEvent'>
+
         {registeredTeams.map((team, index) => (
           <RegisteredTeam
             key={team.teamId}

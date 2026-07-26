@@ -1,24 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 import axios from '../axios';
-import './Three_Member_Team.css';
+import './Three_Member_Team.css'
 import { useStateValue } from '../StateProvider';
 import AnimatedPage from '../templates/AnimatedPage';
 import { useEffect } from 'react';
 import RegisteredTeam from './RegisteredTeam';
 
-function Six_Member_Team({ eventId, eventName, registeredTeams, schoolId, teamIndex, minMember, onTeamUpdate }) {
+function Seven_Member_Team({ eventId, eventName, registeredTeams, schoolId, teamIndex , minMember,onTeamUpdate}) {
   const [p1, setP1] = useState('');
   const [p2, setP2] = useState('');
   const [p3, setP3] = useState('');
   const [p4, setP4] = useState('');
   const [p5, setP5] = useState('');
   const [p6, setP6] = useState('');
+  const [p7, setP7] = useState('');
   const[{schoolName},dispatch]=useStateValue();
 
   const handleEvent = async (e) => {
     e.preventDefault();
 
-    const participantNames = [p1, p2, p3, p4, p5, p6];
+    const participantNames = [p1, p2, p3, p4, p5, p6,p7];
 
     const filledParticipants = participantNames
       .map((name, index) => ({ name: name.trim(), index }))
@@ -44,6 +45,7 @@ function Six_Member_Team({ eventId, eventName, registeredTeams, schoolId, teamIn
         setP4('');
         setP5('');
         setP6('');
+        setP7('');
         alert('Added Successfully');
         if (onTeamUpdate) {
             onTeamUpdate();
@@ -128,6 +130,13 @@ function Six_Member_Team({ eventId, eventName, registeredTeams, schoolId, teamIn
               if (!isValid) { alert("Only alphabets are allowed");
                 return; }
               setP6(value);}} placeholder="Type Candidate's Name" className='register_form' />
+          
+          <h5 style={{ color: '#000000', marginBottom: '8px', marginTop: '15px' }}>Participant 7</h5>
+          <input type='text' value={p7} onChange={(e) => {
+              const value = e.target.value; const isValid = /^[a-zA-Z\s]*$/.test(value); // allows alphabets and spaces
+              if (!isValid) { alert("Only alphabets are allowed");
+                return; }
+              setP7(value);}} placeholder="Type Candidate's Name" className='register_form' />
 
           <button 
             className='login_signin' 
@@ -157,4 +166,4 @@ function Six_Member_Team({ eventId, eventName, registeredTeams, schoolId, teamIn
   );
 }
 
-export default Six_Member_Team;
+export default Seven_Member_Team;
