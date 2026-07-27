@@ -193,7 +193,7 @@ const Queries = {
         ON CONFLICT (participant_id) DO UPDATE SET participant_name = EXCLUDED.participant_name, team_id = EXCLUDED.team_id
     `,
   GET_EVENT_DETAILS: `
-        SELECT e.event_id, e.event_name, t.team_id, t.team_name, p.participant_id, p.participant_name, s.school_name
+        SELECT e.event_id, e.event_name,e.max_teams_per_school, t.team_id, t.team_name, p.participant_id, p.participant_name, s.school_name
         FROM schools s JOIN teams t ON s.school_id = t.school_id JOIN events e ON t.event_id = e.event_id
         JOIN participants p ON t.team_id = p.team_id WHERE s.school_name = $1 AND e.event_name = $2
         ORDER BY t.team_id, p.participant_id
@@ -266,7 +266,7 @@ ORDER BY
 // 4. Helper Methods (Replaces Spring Data Logic)
 // ============================================================================
 function buildEventWithTeams(rows, eventName) {
-  const event = { eventId: null, eventName: eventName, teams: [] };
+  const event = { eventId: null, eventName: eventName, teams: [],maxTeams:null };
   if (rows.length === 0) return event;
   const teamMap = new Map();
 
@@ -274,6 +274,7 @@ function buildEventWithTeams(rows, eventName) {
     if (!event.eventId) {
       event.eventId = row.event_id;
       event.eventName = row.event_name;
+      event.maxTeams=row.max_teams_per_school;
     }
     const {
       team_id,
