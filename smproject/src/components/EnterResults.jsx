@@ -1,36 +1,50 @@
-import React, { useState, useMemo } from 'react';
-import axios from '../axios';
-import { useStateValue } from '../StateProvider';
+import React, { useState, useMemo } from "react";
+import axios from "../axios";
+import { useStateValue } from "../StateProvider";
 import {
-  Box, Button, Divider, Grid, IconButton,
-  InputLabel, MenuItem, Paper, Select, Typography,
-} from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import ResultsTable from './ResultsTable';
-import './EnterResults.css';
-
-const POSITION_POINTS = { 1: 10, 2: 5, 3: 3 };
+  Box,
+  Button,
+  Divider,
+  Grid,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Paper,
+  Select,
+  Typography,
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import ResultsTable from "./ResultsTable";
+import "./EnterResults.css";
 
 export default function EnterResults() {
-  const [{ assignedEvent, organiserId, savedResults }] = useStateValue();
+  const [{ assignedEvent, organiserId, organiserName, savedResults }] =
+    useStateValue();
   const [results, setResults] = useState(savedResults || []);
-  const eventId   = assignedEvent?.eventId   || '';
-  const eventName = assignedEvent?.eventName || '';
-  const allTeams  = assignedEvent?.particpants || [];
+  const eventId = assignedEvent?.eventId || "";
+  const eventName = assignedEvent?.eventName || "";
+  const allTeams = assignedEvent?.particpants || [];
+  const Credit22 = [26, 24, 21, 23, 25, 22, 28, 27, 6];
+  const POSITION_POINTS = Credit22.includes(organiserId)
+    ? { 1: 10, 2: 7, 3: 5 }
+    : { 1: 7, 2: 5, 3: 3 };
 
-  const schoolOptions = [...new Map(allTeams.map((t) => [t.schoolName, t.schoolName])).keys()];
-  
+  const schoolOptions = [
+    ...new Map(allTeams.map((t) => [t.schoolName, t.schoolName])).keys(),
+  ];
 
-  const [selectedSchool, setSelectedSchool] = useState('');
-  const [selectedTeamId, setSelectedTeamId] = useState('');
-  const [position, setPosition]             = useState(1);
-  const [rows, setRows]                     = useState([]);
-  const [message, setMessage]               = useState('');
-  const [loading, setLoading]               = useState(false);
+  const [selectedSchool, setSelectedSchool] = useState("");
+  const [selectedTeamId, setSelectedTeamId] = useState("");
+  const [position, setPosition] = useState(1);
+  const [rows, setRows] = useState([]);
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const teamOptions = useMemo(() => {
     if (!selectedSchool) return [];
-    return allTeams.filter((t) => t.schoolName?.trim() === selectedSchool?.trim());
+    return allTeams.filter(
+      (t) => t.schoolName?.trim() === selectedSchool?.trim(),
+    );
   }, [selectedSchool, allTeams]);
 
   const selectedTeam = useMemo(() => {
@@ -39,7 +53,7 @@ export default function EnterResults() {
 
   const handleSchoolChange = (e) => {
     setSelectedSchool(e.target.value);
-    setSelectedTeamId('');
+    setSelectedTeamId("");
   };
   // const fetchResults = () =>{
   //   axios.get(`/vinterbash/resultsByEvent/${organiserId}`)
@@ -62,7 +76,7 @@ export default function EnterResults() {
   //   }
   //   const canAdd = true
   //   rows.forEach(row => {
-  //     if (row.position == position ||  row.teamId == selectedTeam.tea){canAdd = false}     
+  //     if (row.position == position ||  row.teamId == selectedTeam.tea){canAdd = false}
   //   });
 
   //   canAdd && setRows((prev) => [
@@ -82,78 +96,115 @@ export default function EnterResults() {
   // };
 
   const addRow = () => {
-  if (!selectedSchool || !selectedTeamId) {
-    setMessage('Select a school and team first');
-    return;
-  }
+    if (!selectedSchool || !selectedTeamId) {
+      setMessage("Select a school and team first");
+      return;
+    }
 
-  // Pending rows
-  const teamExistsInRows = rows.some(
-    (r) => r.teamId === selectedTeamId
-  );
+    // Pending rows
+    const teamExistsInRows = rows.some((r) => r.teamId === selectedTeamId);
 
-  const positionExistsInRows = rows.some(
-    (r) => r.position === position
-  );
+    const positionExistsInRows = rows.some((r) => r.position === position);
 
-  // Already saved results
-  const teamExistsInResults = results.some(
-    (r) => r.teamId === selectedTeamId
-  );
-
-  const positionExistsInResults = results.some(
-    (r) => r.position === position
-  );
-
-  if (teamExistsInRows || teamExistsInResults) {
-    setMessage('Team already on the result list');
-    return;
-  }
-
-  if (positionExistsInRows || positionExistsInResults) {
-    setMessage(
-      `${position === 1 ? '1st' : position === 2 ? '2nd' : '3rd'} position already taken`
+    // Already saved results
+    const teamExistsInResults = results.some(
+      (r) => r.teamId === selectedTeamId,
     );
-    return;
-  }
-  setRows((prev) => [
-    ...prev,
-    {
-      eventId,
-      eventName,
-      schoolName: selectedSchool,
-      teamId: selectedTeam.teamId,
-      teamName: selectedTeam.teamName,
-      members: selectedTeam.members,
-      position,
-      points: POSITION_POINTS[position],
-    },
-  ]);
-  setMessage('');
-};
 
-  const removeRow = (idx) => setRows((prev) => prev.filter((_, i) => i !== idx));
+    const positionExistsInResults = results.some(
+      (r) => r.position === position,
+    );
+
+    if (teamExistsInRows || teamExistsInResults) {
+      setMessage("Team already on the result list");
+      return;
+    }
+
+    if (positionExistsInRows || positionExistsInResults) {
+      setMessage(
+        `${position === 1 ? "1st" : position === 2 ? "2nd" : "3rd"} position already taken`,
+      );
+      return;
+    }
+    setRows((prev) => [
+      ...prev,
+      {
+        eventId,
+        eventName,
+        schoolName: selectedSchool,
+        teamId: selectedTeam.teamId,
+        teamName: selectedTeam.teamName,
+        members: selectedTeam.members,
+        position,
+        points: POSITION_POINTS[position] || 0,
+      },
+    ]);
+    setMessage("");
+  };
+
+  const removeRow = (idx) =>
+    setRows((prev) => prev.filter((_, i) => i !== idx));
+
+  const sendToEmcee = () => {
+    if (!results.length) {
+      setMessage("No saved results to send. Save results first.");
+      return;
+    }
+
+    const positionLabels = {
+      1: "1st Place",
+      2: "2nd Place",
+      3: "3rd Place",
+    };
+
+    let message = `EVENT RESULTS\n\n`;
+    message += `Event : ${eventName}\n`;
+    message += `Submitted By : ${organiserName || organiserId}\n\n`;
+
+    const sortedResults = [...results].sort((a, b) => a.position - b.position);
+
+    sortedResults.forEach((r) => {
+      const points = POSITION_POINTS[r.position] || 0;
+
+      message += `${positionLabels[r.position]}\n`;
+      message += `School : ${r.schoolName}\n`;
+
+      if (r.members?.length) {
+        message += `Participants : ${r.members.join(", ")}\n`;
+      }
+
+      message += `Points : ${points}\n\n`;
+    });
+
+    message += "Results entered successfully.";
+
+    const phone = "918300475270";
+    const whatsappURL = `https://api.whatsapp.com/send?phone=${import.meta.env.EMCEE_NUMBER}&text=${encodeURIComponent(message)}`;
+
+    window.open(whatsappURL, "_blank");
+    setMessage("Results sent to EMCEE");
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage('');
+    setMessage("");
     if (!rows.length) {
-      setMessage('Add at least one result before saving');
+      setMessage("Add at least one result before saving");
       return;
     }
     try {
       setLoading(true);
       await Promise.all(
         rows.map((r) =>
-          axios.post('/vinterbash/enterResults', {
+          axios.post("/vinterbash/enterResults", {
             event_id: r.eventId,
-            team_id:  r.teamId,
+            team_id: r.teamId,
             position: r.position,
-            points:   r.points,
-          })
-        )
+            points: r.points,
+          }),
+        ),
       );
-      setMessage('Results saved successfully');
+      setMessage("Results saved successfully");
       // setResults((prev) => [
       //   ...prev,
       //   ...rows.map((r) => ({
@@ -165,21 +216,20 @@ export default function EnterResults() {
       //   })),
       // ]);
       setResults((prev) => [
-  ...prev,
-  ...rows.map((r) => ({
-    resultId: `${r.eventId}${r.teamId}`,
-    teamId: r.teamId,
-    position: r.position,
-    schoolName: r.schoolName,
-    eventName: r.eventName,
-    members: r.members,
-  })),
-]);
+        ...prev,
+        ...rows.map((r) => ({
+          resultId: `${r.eventId}${r.teamId}`,
+          teamId: r.teamId,
+          position: r.position,
+          schoolName: r.schoolName,
+          eventName: r.eventName,
+          members: r.members,
+        })),
+      ]);
       setRows([]);
-      
     } catch (err) {
       console.error(err);
-      setMessage(err?.response?.data?.error || 'Save failed');
+      setMessage(err?.response?.data?.error || "Save failed");
     } finally {
       setLoading(false);
     }
@@ -188,7 +238,9 @@ export default function EnterResults() {
   if (!assignedEvent) {
     return (
       <Box className="enter-results-page">
-        <Typography>No event assigned. Please sign in as an organiser.</Typography>
+        <Typography>
+          No event assigned. Please sign in as an organiser.
+        </Typography>
       </Box>
     );
   }
@@ -201,11 +253,18 @@ export default function EnterResults() {
 
       <Grid container spacing={3} justifyContent="center">
         <Grid item xs={12} md={8}>
-          <Paper elevation={3} className="enter-results-card" sx={{ overflow: 'visible' }}>
-
+          <Paper
+            elevation={3}
+            className="enter-results-card"
+            sx={{ overflow: "visible" }}
+          >
             <Box className="event-banner">
-              <Typography variant="subtitle2" className="event-banner-label">Your event</Typography>
-              <Typography variant="h6" className="event-banner-name">{eventName}</Typography>
+              <Typography variant="subtitle2" className="event-banner-label">
+                Your event
+              </Typography>
+              <Typography variant="h6" className="event-banner-name">
+                {eventName}
+              </Typography>
             </Box>
 
             <Divider className="section-divider" />
@@ -214,9 +273,12 @@ export default function EnterResults() {
               Result entry
             </Typography>
 
-            <Box component="form" onSubmit={handleSubmit} className="enter-results-form">
+            <Box
+              component="form"
+              onSubmit={handleSubmit}
+              className="enter-results-form"
+            >
               <Grid container spacing={2}>
-
                 {/* School dropdown */}
                 <Grid item xs={12} sm={6}>
                   <InputLabel className="input-label">School</InputLabel>
@@ -232,21 +294,25 @@ export default function EnterResults() {
                       PaperProps: {
                         style: {
                           maxHeight: 300,
-                          overflowY: 'auto',
+                          overflowY: "auto",
                         },
                       },
                     }}
                   >
                     <MenuItem value="">Select school</MenuItem>
                     {schoolOptions.map((s) => (
-                      <MenuItem key={s} value={s}>{s}</MenuItem>
+                      <MenuItem key={s} value={s}>
+                        {s}
+                      </MenuItem>
                     ))}
                   </Select>
                 </Grid>
 
                 {/* Team dropdown */}
                 <Grid item xs={12} sm={6}>
-                  <InputLabel className="input-label">Team / Participant</InputLabel>
+                  <InputLabel className="input-label">
+                    Team / Participant
+                  </InputLabel>
                   <Select
                     fullWidth
                     value={selectedTeamId}
@@ -260,13 +326,13 @@ export default function EnterResults() {
                       PaperProps: {
                         style: {
                           maxHeight: 300,
-                          overflowY: 'auto',
+                          overflowY: "auto",
                         },
                       },
                     }}
                   >
                     <MenuItem value="">
-                      {selectedSchool ? 'Select team' : 'Select a school first'}
+                      {selectedSchool ? "Select team" : "Select a school first"}
                     </MenuItem>
                     {teamOptions.map((t) => {
                       const memberList = t.members || [];
@@ -284,28 +350,51 @@ export default function EnterResults() {
 
               {/* Members preview — rendered outside the Grid to avoid clipping */}
               {selectedTeam && selectedTeam.members?.length > 1 && (
-                <Box className="members-preview" style={{ marginTop: '16px' }}>
-                  <Typography variant="caption" className="members-label">Members:</Typography>
+                <Box className="members-preview" style={{ marginTop: "16px" }}>
+                  <Typography variant="caption" className="members-label">
+                    Members:
+                  </Typography>
                   <Typography variant="body2">
-                    {selectedTeam.members.join(', ')}
+                    {selectedTeam.members.join(", ")}
                   </Typography>
                 </Box>
               )}
 
-              <Grid container spacing={2} alignItems="center" style={{ marginTop: '8px' }}>
+              <Grid
+                container
+                spacing={2}
+                alignItems="center"
+                style={{ marginTop: "8px" }}
+              >
                 <Grid item xs={6} sm={3}>
                   <InputLabel className="input-label">Position</InputLabel>
-                  <Select
-                    fullWidth
-                    value={position}
-                    onChange={(e) => setPosition(Number(e.target.value))}
-                    size="small"
-                    className="input-select"
-                  >
-                    <MenuItem value={1}>🥇 1st — 10 pts</MenuItem>
-                    <MenuItem value={2}>🥈 2nd — 5 pts</MenuItem>
-                    <MenuItem value={3}>🥉 3rd — 3 pts</MenuItem>
-                  </Select>
+                  {Credit22.includes(organiserId) ? (
+                    <Select
+                      fullWidth
+                      value={position}
+                      onChange={(e) => setPosition(Number(e.target.value))}
+                      size="small"
+                      className="input-select"
+                    >
+                      <MenuItem value={1}>🥇 1st — 10 pts</MenuItem>
+                      <MenuItem value={2}>🥈 2nd — 7 pts</MenuItem>
+                      <MenuItem value={3}>🥉 3rd — 5 pts</MenuItem>
+                    </Select>
+                  ) : (
+                    <Select
+                      fullWidth
+                      value={position}
+                      onChange={(e) => setPosition(Number(e.target.value))}
+                      size="small"
+                      className="input-select"
+                    >
+                      <>
+                        <MenuItem value={1}>🥇 1st — 7 pts</MenuItem>
+                        <MenuItem value={2}>🥈 2nd — 5 pts</MenuItem>
+                        <MenuItem value={3}>🥉 3rd — 3 pts</MenuItem>
+                      </>
+                    </Select>
+                  )}
                 </Grid>
                 <Grid item xs={6} sm={3}>
                   <Button
@@ -336,10 +425,19 @@ export default function EnterResults() {
                 <Typography className="empty-state">
                   Use the dropdowns above to add results to the list.
                 </Typography>
-                ) : (
+              ) : (
                 rows.map((r, i) => (
-                  <Paper key={`${r.teamId}-${i}`} variant="outlined" className="participant-card">
-                    <Grid container spacing={2} alignItems="center" className="participant-grid">
+                  <Paper
+                    key={`${r.teamId}-${i}`}
+                    variant="outlined"
+                    className="participant-card"
+                  >
+                    <Grid
+                      container
+                      spacing={2}
+                      alignItems="center"
+                      className="participant-grid"
+                    >
                       <Grid item xs={12} sm={5}>
                         <Typography variant="body2" fontWeight={600}>
                           {r.members.length === 1 ? r.members[0] : r.teamName}
@@ -348,14 +446,22 @@ export default function EnterResults() {
                           {r.schoolName}
                         </Typography>
                         {r.members.length > 1 && (
-                          <Typography variant="caption" display="block" color="text.secondary">
-                            {r.members.join(', ')}
+                          <Typography
+                            variant="caption"
+                            display="block"
+                            color="text.secondary"
+                          >
+                            {r.members.join(", ")}
                           </Typography>
                         )}
                       </Grid>
                       <Grid item xs={4} sm={3}>
                         <Typography variant="body2">
-                          {r.position === 1 ? '🥇 1st' : r.position === 2 ? '🥈 2nd' : '🥉 3rd'}
+                          {r.position === 1
+                            ? "🥇 1st"
+                            : r.position === 2
+                              ? "🥈 2nd"
+                              : "🥉 3rd"}
                         </Typography>
                       </Grid>
                       <Grid item xs={4} sm={2}>
@@ -364,16 +470,28 @@ export default function EnterResults() {
                         </Typography>
                       </Grid>
                       <Grid item xs={4} sm={2} className="delete-cell">
-                        <IconButton color="error" onClick={() => removeRow(i)} size="small">
+                        <IconButton
+                          color="error"
+                          onClick={() => removeRow(i)}
+                          size="small"
+                        >
                           <DeleteIcon />
                         </IconButton>
                       </Grid>
                     </Grid>
                   </Paper>
                 ))
-                ) }
-                <ResultsTable results={results} setResults={setResults} eventId={eventId} allTeams={allTeams} />
-                <Box className="form-actions">
+              )}
+              <ResultsTable
+                results={results}
+                setResults={setResults}
+                eventId={eventId}
+                allTeams={allTeams}
+              />
+              <Box
+                className="form-actions"
+                sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}
+              >
                 <Button
                   variant="outlined"
                   onClick={() => setRows([])}
@@ -388,11 +506,24 @@ export default function EnterResults() {
                   disabled={loading || !rows.length}
                   className="primary-button"
                 >
-                  {loading ? 'Saving...' : 'Save results'}
+                  {loading ? "Saving..." : "Save results"}
                 </Button>
-                </Box>
+                <Button
+                  variant="contained"
+                  onClick={sendToEmcee}
+                  size="small"
+                  disabled={!results.length}
+                  sx={{
+                    backgroundColor: "#25D366",
+                    color: "#fff",
+                    "&:hover": { backgroundColor: "#1ebe5d" },
+                  }}
+                >
+                  Send to EMCEE
+                </Button>
+              </Box>
 
-                {/* {message && (
+              {/* {message && (
                 <Typography
                   className={
                     message.toLowerCase().includes('fail') || message.toLowerCase().includes('error')
@@ -403,25 +534,24 @@ export default function EnterResults() {
                   {message}
                 </Typography>
                 )} */}
-                {message && (
+              {message && (
                 <Typography
-    className={
-      message.toLowerCase().includes('fail') ||
-      message.toLowerCase().includes('error') ||
-      message.toLowerCase().includes('already') ||
-      message.toLowerCase().includes('taken')
-        ? 'message-error'
-        : 'message-success'
-    }
-  >
-    {message}
-  </Typography>
-)}
+                  className={
+                    message.toLowerCase().includes("fail") ||
+                    message.toLowerCase().includes("error") ||
+                    message.toLowerCase().includes("already") ||
+                    message.toLowerCase().includes("taken")
+                      ? "message-error"
+                      : "message-success"
+                  }
+                >
+                  {message}
+                </Typography>
+              )}
             </Box>
           </Paper>
         </Grid>
       </Grid>
-     
     </Box>
   );
 }
