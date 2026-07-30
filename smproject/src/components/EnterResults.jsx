@@ -145,45 +145,63 @@ export default function EnterResults() {
   const removeRow = (idx) =>
     setRows((prev) => prev.filter((_, i) => i !== idx));
 
-  const sendToEmcee = () => {
-    if (!results.length) {
-      setMessage("No saved results to send. Save results first.");
-      return;
+  // const sendToEmcee = () => {
+  //   if (!results.length) {
+  //     setMessage("No saved results to send. Save results first.");
+  //     return;
+  //   }
+
+  //   const positionLabels = {
+  //     1: "1st Place",
+  //     2: "2nd Place",
+  //     3: "3rd Place",
+  //   };
+
+  //   let message = `EVENT RESULTS\n\n`;
+  //   message += `Event : ${eventName}\n`;
+  //   message += `Submitted By : ${organiserName || organiserId}\n\n`;
+
+  //   const sortedResults = [...results].sort((a, b) => a.position - b.position);
+
+  //   sortedResults.forEach((r) => {
+  //     const points = POSITION_POINTS[r.position] || 0;
+
+  //     message += `${positionLabels[r.position]}\n`;
+  //     message += `School : ${r.schoolName}\n`;
+
+  //     if (r.members?.length) {
+  //       message += `Participants : ${r.members.join(", ")}\n`;
+  //     }
+
+  //     message += `Points : ${points}\n\n`;
+  //   });
+
+  //   message += "Results entered successfully.";
+
+  //   const phone = "918300475270";
+  //   const whatsappURL = `https://api.whatsapp.com/send?phone=${import.meta.env.EMCEE_NUMBER}&text=${encodeURIComponent(message)}`;
+
+  //   window.open(whatsappURL, "_blank");
+  //   setMessage("Results sent to EMCEE");
+  // };
+
+  const sendToEmcee = async () => {
+    try {
+
+        if (!results.length) {
+            setMessage("No saved results to send.");
+            return;
+        }
+
+        await axios.post("/vinterbash/sendToEmcee", {eventId, organiserId});
+
+        alert("Results sent successfully.");
+
+    } catch (err) {
+        console.error(err);
+        setMessage("Failed to send results.");
     }
-
-    const positionLabels = {
-      1: "1st Place",
-      2: "2nd Place",
-      3: "3rd Place",
-    };
-
-    let message = `EVENT RESULTS\n\n`;
-    message += `Event : ${eventName}\n`;
-    message += `Submitted By : ${organiserName || organiserId}\n\n`;
-
-    const sortedResults = [...results].sort((a, b) => a.position - b.position);
-
-    sortedResults.forEach((r) => {
-      const points = POSITION_POINTS[r.position] || 0;
-
-      message += `${positionLabels[r.position]}\n`;
-      message += `School : ${r.schoolName}\n`;
-
-      if (r.members?.length) {
-        message += `Participants : ${r.members.join(", ")}\n`;
-      }
-
-      message += `Points : ${points}\n\n`;
-    });
-
-    message += "Results entered successfully.";
-
-    const phone = "918300475270";
-    const whatsappURL = `https://api.whatsapp.com/send?phone=${import.meta.env.EMCEE_NUMBER}&text=${encodeURIComponent(message)}`;
-
-    window.open(whatsappURL, "_blank");
-    setMessage("Results sent to EMCEE");
-  };
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();

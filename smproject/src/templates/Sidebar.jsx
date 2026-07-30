@@ -26,6 +26,7 @@ const navItems = [
   { text: "Participants" },
   { text: "Enter Results" },
   { text: "Teacher's Info" },
+  {text:"Organiser Dashboard"}
 ];
 
 const Sidebar = ({ drawerWidth, isSidebarOpen, setSidebarOpen }) => {
@@ -52,7 +53,10 @@ const Sidebar = ({ drawerWidth, isSidebarOpen, setSidebarOpen }) => {
     let lcText = "";
 
     if (text === "Dashboard") {
-      lcText = organiserId && !schoolName ? "organiserDashboard" : "dashboard";
+      lcText = "dashboard";
+    }
+    if (text === "Organiser Dashboard") {
+      lcText = "organiserDashboard";
     }
     if (text === "Chordially yours") {
       lcText = "groupmusic";
@@ -217,7 +221,7 @@ const Sidebar = ({ drawerWidth, isSidebarOpen, setSidebarOpen }) => {
                         text !== "Participants" && text !== "Teacher's Info"
                       );
                     } else if (organiserId) {
-                      return text === "Dashboard" || text === "Enter Results";
+                      return text === "Organiser Dashboard" || text === "Enter Results";
                     } else {
                       return text !== "Enter Results";
                     }

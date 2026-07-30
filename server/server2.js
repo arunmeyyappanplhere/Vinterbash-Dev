@@ -3,6 +3,7 @@ const cors = require('cors');
 // const { Pool } = require('pg');
 const pool = require('./db_setup');
 const crypto = require('crypto');
+const axios = require("axios");
 
 // ============================================================================
 // 1. App Configuration & Database Setup
@@ -29,7 +30,7 @@ app.use(express.json());
 // const pool = new Pool({
 //     user: 'postgres',
 //     host: 'localhost',
-//     database: 'vinterbash',
+//     database: 'vinterbash', 
 //     password: 'password',
 //     port: 5432,
 // });
@@ -260,6 +261,38 @@ ORDER BY
     total_points DESC,
     s.school_name;
 `,
+GET_RESULTS_FOR_WHATSAPP:`
+SELECT    e.event_name,    o.organizer_name,r.position,s.school_name,p.participant_name FROM team_results r
+JOIN teams t    ON r.team_id = t.team_id
+JOIN schools s    ON t.school_id = s.school_id
+JOIN events e    ON r.event_id = e.event_id
+JOIN participants p    ON p.team_id = t.team_id
+JOIN organizers o    ON o.organizer_id = $2
+WHERE r.event_id = $1
+ORDER BY r.position, s.school_name;`,
+
+GET_ADMIN_DASHBOARD: `
+SELECT s.school_id,s.school_name,e.event_id,e.event_name,COUNT(DISTINCT t.team_id) FILTER (WHERE t.event_id = e.event_id) AS team_count,COUNT(DISTINCT p.participant_id) FILTER (WHERE t.event_id = e.event_id) AS participant_count
+FROM schools s
+JOIN teams t ON s.school_id = t.school_id
+JOIN events e ON t.event_id = e.event_id
+LEFT JOIN participants p ON t.team_id = p.team_id
+GROUP BY s.school_id,s.school_name,e.event_id,e.event_name
+ORDER BY s.school_name,e.event_name;`,
+
+GET_ADMIN_DASHBOARD_SUMMARY: `SELECT s.school_id,s.school_name,COUNT(DISTINCT e.event_id) AS registered_events,COUNT(DISTINCT t.team_id) AS total_teams,COUNT(DISTINCT p.participant_id) AS total_participants
+FROM schools s
+JOIN teams t ON s.school_id = t.school_id
+JOIN events e ON t.event_id = e.event_id
+LEFT JOIN participants p ON t.team_id = p.team_id
+GROUP BY s.school_id,s.school_name
+ORDER BY s.school_name  `,
+
+GET_DOWNLOAD_REGISTRATIONS:`SELECT s.school_name,e.event_name,p.participant_name FROM teams t
+JOIN schools s ON s.school_id = t.school_id
+JOIN events e ON e.event_id = t.event_id
+LEFT JOIN participants p ON p.team_id = t.team_id
+ORDER BY s.school_name,e.event_name`
 };
 // pushed by Arvindh Lakshman ends
 // ============================================================================
@@ -697,6 +730,196 @@ router.post("/teacherInfo", async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }
+});
+
+router.post("/sendToEmcee", async (req, res) => {
+    try {
+
+        const { eventId, organiserId } = req.body;
+
+        const { rows } = await pool.query(
+            Queries.GET_RESULTS_FOR_WHATSAPP,
+            [eventId, organiserId]
+        );
+
+        if (!rows.length) {
+            return res.status(404).json({
+                message: "No results found"
+            });
+        }
+
+        const eventName = rows[0].event_name;
+        const organiserName = rows[0].organizer_name;
+
+        const grouped = {};
+
+        rows.forEach(r => {
+
+            if (!grouped[r.position]) {
+                grouped[r.position] = {
+                    schoolName: r.school_name,
+                    members: []
+                };
+            }
+
+            grouped[r.position].members.push(r.participant_name);
+
+        });
+
+        const labels = {
+            1: "1st Place",
+            2: "2nd Place",
+            3: "3rd Place"
+        };
+
+        let message = `EVENT RESULTS\n\n`;
+
+        message += `Event : ${eventName}\n`;
+        message += `Uploaded By : ${organiserName}\n\n`;
+
+        Object.keys(grouped).sort().forEach(position => {
+
+            const result = grouped[position];
+
+            message += `${labels[position]}\n`;
+            message += `School : ${result.schoolName}\n`;
+            message += `Participants : ${result.members.join(", ")}\n\n`;
+
+        });
+
+        const recipients = [
+    process.env.EMCEE1,
+    process.env.EMCEE2
+];
+
+        const sendPromises = recipients.map(phone =>
+        
+    axios.post(
+        `https://graph.facebook.com/v25.0/${process.env.WHATSAPP_PHONE_ID}/messages`,
+        {
+            messaging_product: "whatsapp",
+            to: phone,
+            type: "text",
+            text: {
+                body: message
+            }
+        },
+        {
+            headers: {
+                Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
+                "Content-Type": "application/json"
+            }
+        }
+    )
+);
+
+        res.json({
+            success: true
+        });
+
+    } catch (err) {
+
+        console.error(err.response?.data || err);
+
+        res.status(500).json({
+            success: false,
+            error: err.response?.data || err.message
+        });
+
+    }
+});
+
+router.post("/adminDashboard", async (req, res) => {
+    try {
+
+        const { rows } = await pool.query(
+            Queries.GET_ADMIN_DASHBOARD
+        );
+
+        const { rows: summaryRes } = await pool.query(
+    Queries.GET_ADMIN_DASHBOARD_SUMMARY
+);
+
+        const schoolMap = new Map();
+
+        rows.forEach(row => {
+
+            if (!schoolMap.has(row.school_id)) {
+
+                schoolMap.set(row.school_id, {
+                    schoolId: row.school_id,
+                    schoolName: row.school_name,
+                    events: []
+                });
+
+            }
+
+            schoolMap.get(row.school_id).events.push({
+
+                eventId: row.event_id,
+                eventName: row.event_name,
+                teamCount: Number(row.team_count),
+                participantCount: Number(row.participant_count)
+
+            });
+
+        });
+
+        summaryRes.forEach(row => {
+          if (schoolMap.has(row.school_id)) {
+            schoolMap.get(row.school_id).registeredEvents = Number(row.registered_events);
+            schoolMap.get(row.school_id).totalTeams = Number(row.total_teams);
+            schoolMap.get(row.school_id).totalParticipants = Number(row.total_participants);
+          }
+        });
+
+        const response = [...schoolMap.values()];
+
+        res.status(200).json(response);
+
+    } catch (err) {
+
+        console.error(err);
+
+        res.status(500).json({
+            error: "Internal Server Error"
+        });
+
+    }
+});
+
+router.get("/downloadRegistrations", async (req, res) => {
+
+    try {
+
+        const { rows } = await pool.query(
+            Queries.GET_DOWNLOAD_REGISTRATIONS
+        );
+
+        const excelData = rows.map(row => ({
+
+            School: row.school_name,
+
+            Event: row.event_name,
+
+            Team: row.team_id,
+
+            Participant: row.participant_name
+
+        }));
+
+        res.status(200).json(excelData);
+
+    } catch (err) {
+
+        console.error(err);
+
+        res.status(500).json({
+            error: "Internal Server Error"
+        });
+
+    }
+
 });
 
 app.use("/vinterbash", router);
