@@ -25,6 +25,7 @@ function Dashboard() {
 
 
   useEffect(() => {
+    if (!schoolId) return;
     axios.post('/vinterbash/registeredEvents', { schoolId })
       .then((response) => {
         console.log('InsideDashboard--->', response.data);
@@ -44,6 +45,9 @@ function Dashboard() {
                 staff2Number: response.data.teacher2number
               }
             });
+      })
+      .catch((error) => {
+        console.error("Dashboard data fetch error:", error);
       });
   }, [schoolId]);
 
