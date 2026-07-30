@@ -24,9 +24,9 @@ import AnimatedPage from "./AnimatedPage";
 const navItems = [
   { text: "Dashboard" },
   { text: "Participants" },
+  {text:"Organiser Dashboard"},
   { text: "Enter Results" },
-  { text: "Teacher's Info" },
-  {text:"Organiser Dashboard"}
+  { text: "Teacher's Info" }
 ];
 
 const Sidebar = ({ drawerWidth, isSidebarOpen, setSidebarOpen }) => {
@@ -55,9 +55,10 @@ const Sidebar = ({ drawerWidth, isSidebarOpen, setSidebarOpen }) => {
     if (text === "Dashboard") {
       lcText = "dashboard";
     }
-    if (text === "Organiser Dashboard") {
+    else if (text === "Organiser Dashboard") {
       lcText = "organiserDashboard";
     }
+    else
     if (text === "Chordially yours") {
       lcText = "groupmusic";
     } else if (text === "Teacher's Info") {
@@ -199,7 +200,7 @@ const Sidebar = ({ drawerWidth, isSidebarOpen, setSidebarOpen }) => {
                         height: "auto",
                       }}
                       onClick={() => {
-                        navigate(`/dashboard`);
+                        // navigate(`/dashboard`);
                         if (isMobile) {
                           setSidebarOpen(false);
                         }
@@ -223,7 +224,8 @@ const Sidebar = ({ drawerWidth, isSidebarOpen, setSidebarOpen }) => {
                     } else if (organiserId) {
                       return text === "Organiser Dashboard" || text === "Enter Results";
                     } else {
-                      return text !== "Enter Results";
+                      return text !== "Enter Results" &&
+                        text !== "Organiser Dashboard"
                     }
                   })
                   .map(({ text }) => renderNavItem(text))}

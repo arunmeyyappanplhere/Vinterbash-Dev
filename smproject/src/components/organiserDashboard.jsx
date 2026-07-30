@@ -4,7 +4,8 @@ import { useStateValue } from '../StateProvider';
 import AnimatedPage from '../templates/AnimatedPage';
 
 function OrganiserDashboard() {
-  const [{ organiserName, organiserId, role }] = useStateValue();
+  const [{ organiserName, organiserId, role, assignedEvent }] = useStateValue();
+  console.log(assignedEvent);
 
   const displayName = organiserName || 'Organiser';
   const displayId = organiserId || 'Pending';
@@ -22,11 +23,10 @@ function OrganiserDashboard() {
         }}
       >
         <Box>
-          <Typography variant="h4" fontFamily="'nevis', sans-serif" color="#F68F04" gutterBottom>
+          <Typography variant="h4" fontFamily="'nevis', sans-serif" color="#000000" gutterBottom>
             Organiser Dashboard
           </Typography>
           <Typography variant="body1" color="text.secondary">
-            This is a dummy page for testing organiser-specific features and workflows.
           </Typography>
         </Box>
 
@@ -47,25 +47,15 @@ function OrganiserDashboard() {
             </Box>
             <Stack direction="row" spacing={1} flexWrap="wrap">
               <Chip label={`Role: ${displayRole}`} color="warning" />
-              <Chip label="Dummy Page" variant="outlined" />
             </Stack>
           </Stack>
         </Paper>
 
-        <Box display="flex" flexWrap="wrap" gap={2}>
-          <Paper elevation={2} sx={{ flex: '1 1 220px', p: 2.5, borderRadius: 2 }}>
-            <Typography variant="subtitle2" color="text.secondary">Events Assigned</Typography>
-            <Typography variant="h4" mt={1} fontWeight={700}>12</Typography>
-          </Paper>
+        <Box display="flex" flexWrap="wrap" gap={2} width = "30%" justifyContent={'center'} margin={'auto'}>
 
-          <Paper elevation={2} sx={{ flex: '1 1 220px', p: 2.5, borderRadius: 2 }}>
-            <Typography variant="subtitle2" color="text.secondary">Pending Checks</Typography>
-            <Typography variant="h4" mt={1} fontWeight={700}>4</Typography>
-          </Paper>
-
-          <Paper elevation={2} sx={{ flex: '1 1 220px', p: 2.5, borderRadius: 2 }}>
-            <Typography variant="subtitle2" color="text.secondary">Live Status</Typography>
-            <Typography variant="h4" mt={1} fontWeight={700}>Ready</Typography>
+          <Paper elevation={2} sx={{ flex: '1 1 220px', p: 2.5, borderRadius: 2 , width : "50%"}}>
+            <Typography variant="subtitle2" color="text.secondary">Event Assigned</Typography>
+            <Typography variant="h4" mt={1} fontWeight={700}>{assignedEvent.eventName}</Typography>
           </Paper>
         </Box>
       </Box>
