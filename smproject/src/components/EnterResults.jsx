@@ -388,11 +388,9 @@ export default function EnterResults() {
                       size="small"
                       className="input-select"
                     >
-                      <>
-                        <MenuItem value={1}>🥇 1st — 7 pts</MenuItem>
-                        <MenuItem value={2}>🥈 2nd — 5 pts</MenuItem>
-                        <MenuItem value={3}>🥉 3rd — 3 pts</MenuItem>
-                      </>
+                      <MenuItem value={1}>🥇 1st — 7 pts</MenuItem>
+                      <MenuItem value={2}>🥈 2nd — 5 pts</MenuItem>
+                      <MenuItem value={3}>🥉 3rd — 3 pts</MenuItem>
                     </Select>
                   )}
                 </Grid>
@@ -400,6 +398,7 @@ export default function EnterResults() {
                   <Button
                     variant="contained"
                     onClick={addRow}
+                    type="button"
                     size="small"
                     className="primary-button"
                     disabled={!selectedTeamId}
