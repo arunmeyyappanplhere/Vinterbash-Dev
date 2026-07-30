@@ -1,100 +1,122 @@
+/* ==========================================
+   Page Wrapper (Transparent Container)
+   ========================================== */
 .enter-results-page {
   padding: 40px 16px;
-  max-width: 1080px;
+  max-width: 1000px;
   margin: 0 auto;
+  /* No background here - uses your app's background */
 }
 
 .enter-results-title {
   text-align: center;
   margin-bottom: 24px;
+  font-weight: 800;
   letter-spacing: -0.02em;
 }
 
+/* ==========================================
+   Main Glass Card Component
+   ========================================== */
 .enter-results-card {
   padding: 32px;
-  border-radius: 28px;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 28px 60px rgba(15, 23, 42, 0.12);
-  backdrop-filter: blur(18px);
-  overflow: visible;
+  border-radius: 24px !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .section-title {
-  margin-bottom: 20px;
+  margin-bottom: 18px;
   font-weight: 700;
 }
 
+/* ==========================================
+   Inner Glass Containers
+   ========================================== */
 .enter-results-form {
   display: grid;
-  gap: 18px;
+  gap: 16px;
+  padding: 20px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .input-label {
   display: block;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   font-weight: 700;
-  color: #475166;
 }
 
-.input-select,
-.input-field {
-  border-radius: 16px;
-}
-
-.input-field .MuiInputBase-root,
-.input-field .MuiOutlinedInput-root,
-.input-field .MuiOutlinedInput-notchedOutline,
-.input-select .MuiInputBase-root,
+/* ==========================================
+   MUI Glass Field Overrides
+   ========================================== */
 .input-select .MuiOutlinedInput-root,
+.input-field .MuiOutlinedInput-root {
+  border-radius: 12px !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
 .input-select .MuiOutlinedInput-notchedOutline,
-.input-select .MuiSelect-select {
-  border-radius: 16px;
+.input-field .MuiOutlinedInput-notchedOutline {
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
 }
 
-.section-divider {
-  margin: 28px 0;
-  border-color: rgba(145, 158, 171, 0.24);
+.input-select .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline,
+.input-field .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: rgba(255, 255, 255, 0.6) !important;
 }
 
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
+/* ==========================================
+   Card Badges & Items
+   ========================================== */
+.event-banner {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 14px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.section-label {
-  font-size: 1rem;
+.event-banner-label {
+  font-size: 0.75rem;
   font-weight: 700;
+  text-transform: uppercase;
+  opacity: 0.75;
 }
 
-.primary-button,
-.secondary-button {
-  border-radius: 40px;
-  padding: 1em;
-  text-transform: none;
-  min-width: 130px;
+.event-banner-name {
+  font-weight: 800;
+  margin-top: 4px;
 }
 
-.primary-button {
-  box-shadow: none;
+.members-preview {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 12px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.secondary-button {
-  border-color: rgba(100, 116, 139, 0.28);
-}
-
-.empty-state {
-  color: #64748b;
-  font-size: 0.95rem;
+.members-label {
+  font-weight: 700;
+  display: block;
+  opacity: 0.75;
 }
 
 .participant-card {
-  padding: 18px;
-  margin-bottom: 18px;
-  border-radius: 22px;
-  border: 1px solid rgba(145, 158, 171, 0.16);
-  background: rgba(255, 255, 255, 0.92);
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  border-radius: 16px !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .participant-grid {
@@ -103,7 +125,6 @@
 
 .points-label {
   font-weight: 700;
-  color: #102a43;
 }
 
 .delete-cell {
@@ -111,81 +132,62 @@
   justify-content: flex-end;
 }
 
-.form-actions {
-  margin-top: 18px;
-  display: flex;
-  justify-content: flex-end;
-  gap: 14px;
+/* ==========================================
+   Buttons & Layout
+   ========================================== */
+.section-divider {
+  margin: 24px 0;
+  border-color: rgba(255, 255, 255, 0.2) !important;
 }
 
-.message-success,
-.message-error {
-  margin-top: 18px;
-  font-weight: 600;
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.section-label {
+  font-weight: 700;
+}
+
+.primary-button {
+  border-radius: 30px !important;
+  padding: 0.8em 1.6em;
+  text-transform: none;
+  font-weight: 700;
+}
+
+.secondary-button {
+  border-radius: 30px !important;
+  padding: 0.6em 1.4em;
+  text-transform: none;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(6px);
+}
+
+.empty-state {
+  opacity: 0.7;
+  font-size: 0.95rem;
+}
+
+.form-actions {
+  margin-top: 24px;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .message-success {
-  color: #0f766e;
+  color: #10b981;
 }
 
 .message-error {
-  color: #b91c1c;
+  color: #ef4444;
 }
 
-@media (max-width: 960px) {
+@media (max-width: 600px) {
   .enter-results-card {
-    padding: 24px;
+    padding: 20px;
   }
-
-  .enter-results-page {
-    padding: 32px 12px;
-  }
-
-  .section-header {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .form-actions {
-    flex-direction: column;
-    align-items: stretch;
-  }
-}
-
-
-
-
-/*new*/
-.event-banner {
-  background: rgba(15, 23, 42, 0.04);
-  border-radius: 16px;
-  padding: 14px 20px;
-  margin-bottom: 8px;
-}
-
-.event-banner-label {
-  color: #64748b;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.event-banner-name {
-  font-weight: 700;
-  color: #0f172a;
-}
-
-.members-preview {
-  background: rgba(241, 245, 249, 0.8);
-  border-radius: 12px;
-  padding: 10px 16px;
-}
-
-.members-label {
-  color: #64748b;
-  font-weight: 600;
-  display: block;
-  margin-bottom: 2px;
 }
 
