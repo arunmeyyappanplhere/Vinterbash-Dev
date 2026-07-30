@@ -481,20 +481,17 @@ export default function EnterResults() {
                               : "🥉 3rd"}
                         </Typography>
                       </Grid>
-                      <Grid item xs={4} sm={2}>
-                        <Typography variant="body2" className="points-label">
-                          {r.points} pts
-                        </Typography>
-                      </Grid>
                       <Grid item xs={4} sm={2} className="delete-cell">
                         <IconButton
-                          color="error"
-                          onClick={() => removeRow(i)}
-                          size="small"
+                        color="error"
+                        onClick={() => removeRow(i)}
+                        size="small"
+                        sx={{ mr: -1 }}
                         >
-                          <DeleteIcon />
+                        <DeleteIcon />
                         </IconButton>
                       </Grid>
+
                     </Grid>
                   </Paper>
                 ))
