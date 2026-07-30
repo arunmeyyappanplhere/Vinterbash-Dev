@@ -25,7 +25,8 @@ function Navbar() {
   const isHomepage = location.pathname === "/homepage";
   const isEventsPage = location.pathname === "/events";
   const isContactPage = location.pathname === "/POC";
-  const useHomepageStyle = isHomepage || isEventsPage || isContactPage;
+  const isLeaderboardPage = location.pathname === "/leaderboard";
+  const useHomepageStyle = isHomepage || isEventsPage || isContactPage || isLeaderboardPage;
 
   /* mobile-menu state */
   const [anchorEl, setAnchorEl] = useState(null);
