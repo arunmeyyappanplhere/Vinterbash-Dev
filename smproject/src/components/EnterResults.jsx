@@ -55,45 +55,6 @@ export default function EnterResults() {
     setSelectedSchool(e.target.value);
     setSelectedTeamId("");
   };
-  // const fetchResults = () =>{
-  //   axios.get(`/vinterbash/resultsByEvent/${organiserId}`)
-  //   .then((res) => setResults(res.data?.assignedEvents?.savedResults || []))
-  //   .catch((err) => console.error(err));
-  // };
-
-  // const addRow = () => {
-  //   if (!selectedSchool || !selectedTeamId) {
-  //     setMessage('Select a school and team first');
-  //     return;
-  //   }
-  //   if (rows.find((r) => r.teamId === selectedTeamId)) {
-  //     setMessage('This team is already in the list');
-  //     return;
-  //   }
-  //   if(rows.find((r) => r.position === position)) {
-  //     setMessage(`${position === 1 ? '1st' : position === 2 ? '2nd' : '3rd'} place is already assigned`);
-  //     return;
-  //   }
-  //   const canAdd = true
-  //   rows.forEach(row => {
-  //     if (row.position == position ||  row.teamId == selectedTeam.tea){canAdd = false}
-  //   });
-
-  //   canAdd && setRows((prev) => [
-  //     ...prev,
-  //     {
-  //       eventId,
-  //       eventName,
-  //       schoolName: selectedSchool,
-  //       teamId:     selectedTeam.teamId,
-  //       teamName:   selectedTeam.teamName,
-  //       members:    selectedTeam.members,
-  //       position,
-  //       points:     POSITION_POINTS[position],
-  //     },
-  //   ]);
-  //   canAdd && setMessage('');
-  // };
 
   const addRow = () => {
     if (!selectedSchool || !selectedTeamId) {
@@ -145,63 +106,21 @@ export default function EnterResults() {
   const removeRow = (idx) =>
     setRows((prev) => prev.filter((_, i) => i !== idx));
 
-  // const sendToEmcee = () => {
-  //   if (!results.length) {
-  //     setMessage("No saved results to send. Save results first.");
-  //     return;
-  //   }
-
-  //   const positionLabels = {
-  //     1: "1st Place",
-  //     2: "2nd Place",
-  //     3: "3rd Place",
-  //   };
-
-  //   let message = `EVENT RESULTS\n\n`;
-  //   message += `Event : ${eventName}\n`;
-  //   message += `Submitted By : ${organiserName || organiserId}\n\n`;
-
-  //   const sortedResults = [...results].sort((a, b) => a.position - b.position);
-
-  //   sortedResults.forEach((r) => {
-  //     const points = POSITION_POINTS[r.position] || 0;
-
-  //     message += `${positionLabels[r.position]}\n`;
-  //     message += `School : ${r.schoolName}\n`;
-
-  //     if (r.members?.length) {
-  //       message += `Participants : ${r.members.join(", ")}\n`;
-  //     }
-
-  //     message += `Points : ${points}\n\n`;
-  //   });
-
-  //   message += "Results entered successfully.";
-
-  //   const phone = "918300475270";
-  //   const whatsappURL = `https://api.whatsapp.com/send?phone=${import.meta.env.EMCEE_NUMBER}&text=${encodeURIComponent(message)}`;
-
-  //   window.open(whatsappURL, "_blank");
-  //   setMessage("Results sent to EMCEE");
-  // };
-
   const sendToEmcee = async () => {
     try {
+      if (!results.length) {
+        setMessage("No saved results to send.");
+        return;
+      }
 
-        if (!results.length) {
-            setMessage("No saved results to send.");
-            return;
-        }
+      await axios.post("/vinterbash/sendToEmcee", { eventId, organiserId });
 
-        await axios.post("/vinterbash/sendToEmcee", {eventId, organiserId});
-
-        alert("Results sent successfully.");
-
+      alert("Results sent successfully.");
     } catch (err) {
-        console.error(err);
-        setMessage("Failed to send results.");
+      console.error(err);
+      setMessage("Failed to send results.");
     }
-};
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -223,16 +142,6 @@ export default function EnterResults() {
         ),
       );
       setMessage("Results saved successfully");
-      // setResults((prev) => [
-      //   ...prev,
-      //   ...rows.map((r) => ({
-      //     resultId:   `${r.eventId}${r.teamId}`,
-      //     position:   r.position,
-      //     schoolName: r.schoolName,
-      //     eventName:  r.eventName,
-      //     members:    r.members,
-      //   })),
-      // ]);
       setResults((prev) => [
         ...prev,
         ...rows.map((r) => ({
@@ -449,50 +358,67 @@ export default function EnterResults() {
                     variant="outlined"
                     className="participant-card"
                   >
-                    <Grid
-                      container
-                      spacing={2}
-                      alignItems="center"
-                      className="participant-grid"
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        width: "100%",
+                      }}
                     >
-                      <Grid item xs={12} sm={5}>
-                        <Typography variant="body2" fontWeight={600}>
-                          {r.members.length === 1 ? r.members[0] : r.teamName}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {r.schoolName}
-                        </Typography>
-                        {r.members.length > 1 && (
+                      <Grid
+                        container
+                        spacing={2}
+                        alignItems="center"
+                        className="participant-grid"
+                        sx={{ flex: 1 }}
+                      >
+                        <Grid item xs={12} sm={6}>
+                          <Typography variant="body2" fontWeight={600}>
+                            {r.members.length === 1
+                              ? r.members[0]
+                              : r.teamName}
+                          </Typography>
                           <Typography
                             variant="caption"
-                            display="block"
                             color="text.secondary"
                           >
-                            {r.members.join(", ")}
+                            {r.schoolName}
                           </Typography>
-                        )}
+                          {r.members.length > 1 && (
+                            <Typography
+                              variant="caption"
+                              display="block"
+                              color="text.secondary"
+                            >
+                              {r.members.join(", ")}
+                            </Typography>
+                          )}
+                        </Grid>
+                        <Grid item xs={6} sm={3}>
+                          <Typography variant="body2">
+                            {r.position === 1
+                              ? "🥇 1st"
+                              : r.position === 2
+                                ? "🥈 2nd"
+                                : "🥉 3rd"}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6} sm={3}>
+                          <Typography variant="body2" className="points-label">
+                            {r.points} pts
+                          </Typography>
+                        </Grid>
                       </Grid>
-                      <Grid item xs={4} sm={3}>
-                        <Typography variant="body2">
-                          {r.position === 1
-                            ? "🥇 1st"
-                            : r.position === 2
-                              ? "🥈 2nd"
-                              : "🥉 3rd"}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={4} sm={2} className="delete-cell">
-                        <IconButton
+
+                      <IconButton
                         color="error"
                         onClick={() => removeRow(i)}
                         size="small"
-                        sx={{ mr: -1 }}
-                        >
+                        sx={{ ml: 1, flexShrink: 0 }}
+                      >
                         <DeleteIcon />
-                        </IconButton>
-                      </Grid>
-
-                    </Grid>
+                      </IconButton>
+                    </Box>
                   </Paper>
                 ))
               )}
@@ -537,17 +463,6 @@ export default function EnterResults() {
                 </Button>
               </Box>
 
-              {/* {message && (
-                <Typography
-                  className={
-                    message.toLowerCase().includes('fail') || message.toLowerCase().includes('error')
-                      ? 'message-error'
-                      : 'message-success'
-                  }
-                >
-                  {message}
-                </Typography>
-                )} */}
               {message && (
                 <Typography
                   className={
