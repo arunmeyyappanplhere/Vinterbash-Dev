@@ -230,11 +230,11 @@ function Leaderboard() {
                                   <td style={td}>
                                     {event.position}
                                     {event.position === 1
-                                      ? " 🥇"
+                                      ? "st"
                                       : event.position === 2
-                                        ? " 🥈"
+                                        ? "nd"
                                         : event.position === 3
-                                          ? " 🥉"
+                                          ? "rd"
                                           : ""}
                                   </td>
                                 </tr>
